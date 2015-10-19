@@ -1,4 +1,5 @@
 1.	Thresholding
+1.1     Otsu's method
 2.	Feature Extraction
 2.1.	Entropy Filtering
 3.	PCA
