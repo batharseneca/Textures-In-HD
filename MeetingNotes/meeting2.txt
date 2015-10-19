@@ -1,0 +1,15 @@
+1.	Thresholding
+2.	Feature Extraction
+2.1.	Entropy Filtering
+3.	PCA
+4.	Plotting
+5.	BONUS
+5.1.	GUI
+5.2.	Clicking dots on PCA plot
+5.3.	Choosing multiple features
+6.	Choice of language
+6.1.	Python
+
+Meeting 2 – Notes
+We have broken up components of the project. We are going to look further into each of the components to see how we can split tasks in the next meeting.
+
