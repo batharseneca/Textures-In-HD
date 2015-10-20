@@ -1,0 +1,57 @@
+author: Nishanth
+
+# Questions to address about importing
+- What is the image file type? TIFF comes in a variety - what are the dimensions per image?
+- Are the dimensions / other settings for the image saving per run constant, or do they vary?
+- How is metadata typically stored in the lab?
+
+End goal: TIFF image converted to numpy array
+
+
+
+1.	Thresholding
+
+# Questions to address
+- Do we want users to be able to select thersholding techniques?
+- What techniques do you want to be made available?
+- User dependendent 
+
+1.1     Otsu's method
+
+
+End goal: Input array modified to only contain information about selected regions. Output array		
+
+
+
+2.	Feature Extraction
+2.1.	Entropy Filtering
+
+Input: 1 or more arrays
+Process: Use statistics / image analysis codes to search through array and generate summary statistics
+Output: Summary statistics. Rows indicate picture ID and columns indicate the summary statistics (features).
+
+
+3.	PCA
+
+Input: Table from above (features vs picture ID)
+Process: PCA or other dimension reduction tool
+Output: Eigenvectors (the variation of points/pictures on each vector) and eigenvalues (how much variance is captured in each vector)
+
+
+4.	Plotting
+
+Input: Eigenvectors and Image metadata
+Process: convert to 2D or 3D graphical interface
+Output: Graphical interface
+
+
+5.	BONUS
+5.1.	GUI
+5.2.	Clicking dots on PCA plot
+5.3.	Choosing multiple features
+6.	Choice of language
+6.1.	Python
+
+Meeting 2 – Notes
+We have broken up components of the project. We are going to look further into each of the components to see how we can split tasks in the next meeting.
+

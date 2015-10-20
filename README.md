@@ -1,6 +1,7 @@
 # Image Analysis Software Development
 
 Members: Nishanth Merwin, Andrew Mocle, Bilal Athar, Tyler Murphy
+
 Date: October 18th, 2015
 
 
