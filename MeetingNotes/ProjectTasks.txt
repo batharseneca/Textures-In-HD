@@ -1,4 +1,4 @@
-author: Nishanth
+﻿author: Nishanth
 
 # Questions to address about importing
 - What is the image file type? TIFF comes in a variety - what are the dimensions per image?
@@ -6,7 +6,7 @@ author: Nishanth
 - How is metadata typically stored in the lab?
 
 End goal: TIFF image converted to numpy array
-
+blah blah
 
 
 1.	Thresholding
