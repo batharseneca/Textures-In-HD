@@ -4,7 +4,7 @@ import math as mt
 ### Still untested!
 ### Reference document: http://www.uio.no/studier/emner/matnat/ifi/INF4300/h08/undervisningsmateriale/glcm.pdf
 ### This script has the different functions that are defined to extract Haralick features from an IGLCM
-
+# Why isn't this working?
 
 ## Angular Second Moment(ASM) / Energy is a measure of homogeneity in an image
 def ASM(CoMat):
