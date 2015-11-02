@@ -1,8 +1,9 @@
 from bokeh.plotting import figure, show, output_file, ColumnDataSource
-from bokeh.models import HoverTool
+from bokeh.models import HoverTool, PanTool, ResizeTool
 import pandas as pd
 import seaborn as sns
 import sys
+from collections import OrderedDict
 
 ## Using a sample Dataset (PCA from 1000 genomes project), created a interactive plotting function
 
@@ -24,17 +25,19 @@ output_file("toolbar.html")
 
 source = ColumnDataSource(merged)
 
-hover = HoverTool(
-        tooltips=[
-            ("FID", "@FID"),
-            ("(PC1,PC2)", "(@PC1, @PC2)"),
-            ("Population Group", "@pop7groups"),
-        ]
-    )
-	
-p = figure(plot_width=1200, plot_height=800, tools=[hover],
+TOOLS = "pan,wheel_zoom,box_zoom,reset,save,hover"	
+
+p = figure(plot_width=1200, plot_height=800, tools=TOOLS,
            title="1000 Genomes according to Population Group")
 
+		   
+hover = p.select(dict(type=HoverTool))
+hover.point_policy = "follow_mouse"
+hover.tooltips = OrderedDict([
+    ("FID", "@FID"),
+    ("(PC1,PC2)", "(@PC1, @PC2)"),
+    ("Population Group", "@pop7groups"),
+])
 
 import seaborn as sns
 

@@ -1,0 +1,16 @@
+Meeting #4 - IGP
+
+
+Goals:
+- Get a sample code working where an image can be processed all the way through.
+- Within the next couple days. Can talk to each other and stuff
+
+Thresholding:
+- What is the goal? Just the stained parts of the cell or the whole cell?
+- More images needed to analyse / test for thresholding.
+
+
+Final project:
+- Module for cell profiler?
+- Could allow for better access.
+- Same scripts as before (python 2 not 3) and allows for easy GUI work.
