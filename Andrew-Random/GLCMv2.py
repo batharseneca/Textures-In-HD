@@ -1,3 +1,7 @@
+### Isotropic Gray-Level Co-Occurance Matrix ###
+'''Function GLCM takes an arbitrarily sized integer matrix (Img) and neighboorhood size (nhood) and returns the co occurance matrix (CoMat). 
+Entry in CoMat(i,j) is the probability that two pixel gray value co occur within neighboorhood nhood in Img. 
+It is a symmetric matrix. Requires numpy module imported as 'np'.'''
 def GLCM(Img,nhood):
     CoMatDim=(np.amax(Img)+1,np.amax(Img)+1) #Dimensions of CoMat are 0 to max(Img), +1 because of the way python indexes arrays
     CoMat=np.zeros(CoMatDim,dtype=np.int) #Initialize CoMat as matrix of zeros
@@ -35,5 +39,6 @@ def GLCM(Img,nhood):
                 CoMat[ImgFlat1[d],ImgFlat2[d]]=CoMat[ImgFlat1[d],ImgFlat2[d]]+1
 
 
-    CoMat=CoMat+np.transpose(CoMat)
+    CoMat=CoMat+np.transpose(CoMat) #Make symmetric matrix
+    CoMat=np.divide(CoMat,numpy.sum(CoMat)) #Normalize CoMat#
     return [CoMat]
