@@ -1,0 +1,21 @@
+Meeting 5 notes
+
+- Optimizing cooccurance matrix based off results from thresholding (Nishanth and Bilal)
+
+
+- 1 Working threshold (user based and automated) - Bilal is working on it
+
+- Haralick functions to be done
+
+- Start working with multiple images (can use phenoripper images)
+
+
+- pipeline (organization of scripts) - Nishanth working on it.
+
+- Write everything as generic scripts
+
+- Meeting on Friday as a workshop
+
+
+
+

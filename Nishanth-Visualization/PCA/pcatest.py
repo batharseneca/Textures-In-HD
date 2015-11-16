@@ -1,7 +1,7 @@
 ## PCA Test
 import pandas as pd
 import numpy as np
-from scipy.sklearn import decomposition
+from sklearn import decomposition
 
 # Creates index of participant names
 participant = list(range(1,17))
