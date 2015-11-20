@@ -1,0 +1,25 @@
+# Meeting 6
+
+
+Things accomplished:
+- Tyler made good way in the project proposal. Roles defined.
+
+- wrapper function is defined.
+
+
+Bilal and Nishanth Notes
+- Image thresholding module UI
+	- Could be done in Java?
+	- Want to have a image / intensity histogram / slider available within CellProfile module parameters page
+	- Image updates alongside slider
+	- Has option for auto and manual input
+	
+	
+	
+Overall Functions
+	- All of the functions need to be written out
+	- Thresholding (Nishanth talk to Mocle for more images / figuring out bimodal images stuff)
+	- Talk to mocle about neighbourhood size
+	- Gonna be lax about function writing. Just make sure to update github with changes.
+
+
