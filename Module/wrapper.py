@@ -47,14 +47,35 @@ def	wrapperIGLCM(image,thresholdAuto,thresholdManualValue,thresholdFilter,nhoodS
 } 
 
 
+def haralickALL(CoMat):
+	np.array([
+		ASM(CoMat),
+		contrast(CoMat),
+		IDM(CoMat),
+		entropy(CoMat),
+		xmean(CoMat),
+		ymean(CoMat),
+		xstdev(CoMat),
+		ystdev(CoMat),
+		CORR(CoMat),
+		mean(CoMat),
+		variance(CoMat),
+		xPlusY(CoMat),
+		sumAverage(CoMat),
+		sumEntropy(CoMat),
+		difEntropy(CoMat),
+		inertia(CoMat),
+		clusterShade(CoMat),
+		clusterProm(CoMat),
+	])
 
-# Accepts multiple cooccurance matrices (coMat is a list of file.npy locations)
+
+# Accepts multiple cooccurance matrices (coMat is a list of file.npy locations) (WOOT FINISHED)
 def haralick(coMat){
 
-	haralickOut = ["ImageLocation","H1","H2",...]
+	haralickOut = ["ImageLocation","ASM","Contrast","IDM","entropy","xmean","ymean","xstdev","ystdev","CORR","mean","variance","xPlusY","sumAverage","sumEntropy","difEntropy","inertia","clusterShade","clusterProm"]
 	for i in coMat{	
-		IGLCM <- loadIGLCM(i)
-		
+		IGLCM <- np.load(i)
 		# Function to apply ALL the haralick features on a single IGLCM
 		# Returns array of haralick values
 		hVals = haralickALL(IGLCM)
@@ -62,8 +83,8 @@ def haralick(coMat){
 		haralickOut = vstack(haralickOut,row)
 	}
 	
-	# Function to format according to Cell Profiler Analyst
-	haralickOut = formatCPAFUN(haralickOut)
+	# Function to format according to Cell Profiler Analyst (This will be in a different module), CP has a module for this.
+	# haralickOut = formatCPAFUN(haralickOut)
 	
 	return(haralickOut)
 }

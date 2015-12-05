@@ -6,6 +6,57 @@ import math as mt
 ### This script has the different functions that are defined to extract Haralick features from an IGLCM
 
 
+def haralickALL(CoMat):
+	np.array([
+		ASM(CoMat),
+		contrast(CoMat),
+		IDM(CoMat),
+		entropy(CoMat),
+		xmean(CoMat),
+		ymean(CoMat),
+		xstdev(CoMat),
+		ystdev(CoMat),
+		CORR(CoMat),
+		mean(CoMat),
+		variance(CoMat),
+		xPlusY(CoMat),
+		sumAverage(CoMat),
+		sumEntropy(CoMat),
+		difEntropy(CoMat),
+		inertia(CoMat),
+		clusterShade(CoMat),
+		clusterProm(CoMat),
+	])
+
+
+	
+
+
+
+
+
+
+# Testing all of the functions.. they work!
+print("ASM is: ",hck.ASM(coMat),"\n")
+print("Contrast is: ",hck.contrast(coMat),"\n")
+print("Local homogeneity is: ",hck.IDM(coMat),"\n")
+print("Entropy is: ",hck.entropy(coMat),"\n")
+print("X-Mean is: ",hck.xmean(coMat),"\n")
+print("Y-Mean is: ",hck.ymean(coMat),"\n")
+print("X-Standard Deviation is: ",hck.xstdev(coMat),"\n")
+print("Y-Standard Deviation is: ",hck.ystdev(coMat),"\n")
+print("Correlation is: ",hck.CORR(coMat),"\n")
+print("Mean is: ",hck.mean(coMat),"\n")
+print("Variance is: ",hck.variance(coMat),"\n")
+print("X plus Y for k-value 150 is: ", hck.xPlusY(coMat,150),"\n")
+print("Sum Average is: ",hck.sumAverage(coMat),"\n")
+print("Sum Etropy is: ",hck.sumEntropy(coMat),"\n")
+print("Difference Entropy is: ",hck.difEntropy(coMat),"\n")
+print("Inertia is: ",hck.inertia(coMat),"\n")
+print("Cluster Shade is: ",hck.clusterShade(coMat),"\n")
+print("Cluster Prominence is: ",hck.clusterProm(coMat),"\n")
+
+
 
 
 
