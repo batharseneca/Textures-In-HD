@@ -1,3 +1,4 @@
+import timing
 import numpy as np
 import math as mt
 
@@ -6,9 +7,10 @@ import haralick as hck
 
 
 
+
+
 # Arbitrary cooccurance matrix
 coMat = np.load("screen.npy")
-
 
 
 # Testing all of the functions.. they work!
@@ -23,7 +25,7 @@ print("Y-Standard Deviation is: ",hck.xstdev(coMat),"\n")
 print("Correlation is: ",hck.CORR(coMat),"\n")
 print("Mean is: ",hck.mean(coMat),"\n")
 print("Variance is: ",hck.variance(coMat),"\n")
-print("X plus Y for k-value 150 is: ", hck.xPlusY(coMat,150),"\n")
+print("X plus Y for k-value 170 is: ", hck.xPlusY(coMat,166),"\n")
 print("Sum Average is: ",hck.sumAverage(coMat),"\n")
 print("Sum Etropy is: ",hck.sumEntropy(coMat),"\n")
 print("Difference Entropy is: ",hck.difEntropy(coMat),"\n")

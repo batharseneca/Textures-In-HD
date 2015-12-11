@@ -47,29 +47,6 @@ def	wrapperIGLCM(image,thresholdAuto,thresholdManualValue,thresholdFilter,nhoodS
 } 
 
 
-def haralickALL(CoMat):
-	np.array([
-		ASM(CoMat),
-		contrast(CoMat),
-		IDM(CoMat),
-		entropy(CoMat),
-		xmean(CoMat),
-		ymean(CoMat),
-		xstdev(CoMat),
-		ystdev(CoMat),
-		CORR(CoMat),
-		mean(CoMat),
-		variance(CoMat),
-		xPlusY(CoMat),
-		sumAverage(CoMat),
-		sumEntropy(CoMat),
-		difEntropy(CoMat),
-		inertia(CoMat),
-		clusterShade(CoMat),
-		clusterProm(CoMat),
-	])
-
-
 # Accepts multiple cooccurance matrices (coMat is a list of file.npy locations) (WOOT FINISHED)
 def haralick(coMat){
 

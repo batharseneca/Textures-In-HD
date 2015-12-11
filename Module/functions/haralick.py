@@ -34,32 +34,6 @@ def haralickALL(CoMat):
 
 
 
-
-
-# Testing all of the functions.. they work!
-print("ASM is: ",hck.ASM(coMat),"\n")
-print("Contrast is: ",hck.contrast(coMat),"\n")
-print("Local homogeneity is: ",hck.IDM(coMat),"\n")
-print("Entropy is: ",hck.entropy(coMat),"\n")
-print("X-Mean is: ",hck.xmean(coMat),"\n")
-print("Y-Mean is: ",hck.ymean(coMat),"\n")
-print("X-Standard Deviation is: ",hck.xstdev(coMat),"\n")
-print("Y-Standard Deviation is: ",hck.ystdev(coMat),"\n")
-print("Correlation is: ",hck.CORR(coMat),"\n")
-print("Mean is: ",hck.mean(coMat),"\n")
-print("Variance is: ",hck.variance(coMat),"\n")
-print("X plus Y for k-value 150 is: ", hck.xPlusY(coMat,150),"\n")
-print("Sum Average is: ",hck.sumAverage(coMat),"\n")
-print("Sum Etropy is: ",hck.sumEntropy(coMat),"\n")
-print("Difference Entropy is: ",hck.difEntropy(coMat),"\n")
-print("Inertia is: ",hck.inertia(coMat),"\n")
-print("Cluster Shade is: ",hck.clusterShade(coMat),"\n")
-print("Cluster Prominence is: ",hck.clusterProm(coMat),"\n")
-
-
-
-
-
 ## Angular Second Moment(ASM) / Energy is a measure of homogeneity in an image
 def ASM(CoMat):
 	val=0
@@ -172,12 +146,22 @@ def variance(CoMat):
 # P(x+y) is the diagonal sum of the matrix.
 def xPlusY(CoMat,kValue):
 	val = 0
-	for i in range(0,CoMat.shape[0]-1):
-		for j in range(0,CoMat.shape[1]-1):
-			if(i+j in range(0,kValue)):
-				val += CoMat[i][j]
-	return val
-
+	if(kValue < CoMat.shape[0]):
+		i=kValue
+		j=0
+		while(i!=0):
+			val += CoMat[i][j]
+			i -= 1
+			j += 1
+		return val
+	if(kValue >= CoMat.shape[0]):
+		i=CoMat.shape[0]-1
+		j= kValue - CoMat.shape[0]-1
+		while(j != CoMat.shape[0]):
+			val += CoMat[i][j]
+			i -= 1
+			j += 1
+		return val
 
 # Sum Average	
 def sumAverage(CoMat):
