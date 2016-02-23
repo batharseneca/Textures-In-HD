@@ -6,13 +6,7 @@
 import numpy as np
 import scipy as sp
 
-from ./functions/convertToArray.py import convertToArray
-
-
-
-
-
-
+from functions.convertToArray import convertToArray
 
 
 # wrapper function accepts a location for an image file
@@ -21,6 +15,7 @@ def	wrapperIGLCM(image,thresholdAuto,thresholdManualValue,thresholdFilter,nhoodS
 	# This function loads the image as a numpy array. Outputs numpy array. Then greyscale
 	image = covertToArray(image)
 	image = greyscale(image)
+	
 	
 	
 	# Applies a filter
