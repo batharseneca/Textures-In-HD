@@ -1,29 +1,20 @@
 
 
-
-
-
-# sys.path.append('c:\users\nishanth\miniconda3\lib\site-packages')
-# import cv2
-
-
-# from PIL import Image
+import cv2
 import numpy as np
 
+def maskImg(template, actual):
 
+	blur = cv2.GaussianBlur(template,(21,21),0)
+	ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+	
+	output = np.empty([2048,2048])
+	
+	for x in range(0,th3.shape[0]):
+		for y in range(0,th3.shape[1]):
+			if(th3[x,y]==255):
+				output[x,y] = actual[x,y]
+			else:
+				output[x,y] = 0
+	return output
 
-import cv2
-
-print(cv2.__version__)
-
-exit()
-
-
-
-
-img = cv2.imread('TESTIMG.tif',0)
-ret, th2 = cv2.threshold(img,0,255,cv2.THRESH_TOZERO+cv2.THRESH_OTSU)
-imarray = numpy.array(th2)
-
-mg = Image.fromarray(imarray)
-mg.save("sampleOUTPUT2.tif")
