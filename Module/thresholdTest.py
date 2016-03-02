@@ -2,6 +2,8 @@
 import cv2
 from functions import thresholdscript
 
+from functions import GLCM
+
 import os
 
 import numpy as np
@@ -29,6 +31,11 @@ for line in f:
 	
 	print "Template and p53 image sizes are: " +  str(template.shape) +str(p53.shape)
 	
+	print "Template max/min: "
+	print "Max and min of p53 image: " + str(np.amax(p53)) + "," + str(np.amin(p53))
+
+	print "Max and min of template image: " + str(np.amax(template)) + "," + str(np.amin(template))
+		
 	print template.dtype
 
 	for x in range(0,template.shape[0]):
@@ -39,60 +46,25 @@ for line in f:
 	template = template.astype(np.uint8)
 	p53 = p53.astype(np.uint8)
 
+	print "Max and min of p53 (uint8) image: " + str(np.amax(p53)) + "," + str(np.amin(p53))
 	print template.dtype	
 
 	masked = thresholdscript.maskImg(template,p53)
 	
-	plt.imshow(template,"gray")
-	plt.savefig("template.png")	
+	print "Max and min of masked image: " + str(np.amax(masked)) + "," + str(np.amin(masked))
 
-	plt.imshow(p53,"gray")
-	plt.savefig("p53.png")
+	'''	
+	comat = GLCM.GLCM(masked,5)
 	
+	print "Comat Max/Min: " + str(comat.shape)
 	
-	plt.imshow(masked,'gray')
-	plt.savefig("masked.png")
-	
+	print comat
+	'''
 	break
 
 
 
 
+
 exit()
-
-
-'''
-
-for i in range(2,len(hoechstDir)):
-	print "Max and min of template are: " + str(np.amax(template)) + ',' + str(np.amin(template))
-	print "Max and min of actual are: " + str(np.amax(actual)) + ',' + str(np.amin(actual))
-	print "Data type is: " + str(type(template))
-	
-	template8bit = np.empty([template.shape[0],template.shape[1]])
-	
-	for x in range(0,template.shape[0]):
-		for y in range(0,template.shape[1]):
-			template8bit[np.array([x]), np.array([y])] = template[np.array([x]), np.array([y])]/256
-	
-	print template8bit	
-
-
-	for x in range(0,len(template.ravel())):
-		template8bit.append(template.ravel()[x]/256)
-	print template8bit.shape
-
-	# template8bit = np.reshape(template8bit,(template.shape[0],template.shape[1]))
-	# print "Shape of original: " , str(template.shape())# + "Shape of modified: " + str(template8bit.shape())
-	
-	
-	
-	
-	# maske = thresholdscript.maskImg(template,actual)
-
-# print os.path.abspath(hoechstDir[0])
-
-print "THIS FUCKING WORKS"
-'''
-
-
 
