@@ -1,7 +1,7 @@
 
 
 from Tkinter import *
-from tkFileDialog import askopenfilename
+from tkFileDialog import askdirectory
 
 import PIL
 
@@ -11,21 +11,36 @@ from PIL import ImageTk
 import os
 
 
-
+import tkMessageBox
 
 app = Tk()
 
 app.title("Threshold")
 
-filename = askopenfilename()
+filename = askdirectory()
 
-print filename[-4:]
+if(os.path.isdir(filename) == False):
+	tkMessageBox.showerror("Not a directory", filename.split("/")[-1] + " is not a directory.")
+	exit()
 
-if(filename[-4:] != ".csv"):
+files = os.listdir(filename)
+
+tifFiles = []
+
+for file in files:
+	if( (file[-4:] == ".tif") or (file[-4:] == ".tiff") ):
+		tifFiles.append(file)
+		continue
+	else:
+
+if(len(tifFiles) == 0):
+	tkMessageBox.showerror("No pictures found", "There were not TIF files found in this directory")
 	exit()
 
 
-f = open(filename,"r")
+exit()
+
+
 picPaths = []
 #Get all of the paths
 for line in f:
