@@ -12,7 +12,6 @@ import tkMessageBox
 import os
 
 
-
 class Application:
 	def __init__(self, parent):
 		self.myParent = parent
@@ -189,10 +188,10 @@ class Application:
 
 	def loadPictureInfo(self):
 		pictureName = self.filePaths[self.index-1]
-		pictureName = pictureName.split("/")[-1]	
+		pictureName = pictureName.split(os.path.sep)[-1]	
 		self.pictureInfo.picName.configure(text=pictureName)
 			
-		indexText = str(self.index) + "/" + str(len(self.filePaths))
+		indexText = str(self.index) + os.path.sep  + str(len(self.filePaths))
 		self.pictureInfo.indexText.configure(text=indexText)	
 
 	
@@ -216,14 +215,14 @@ class Application:
 	def loadImages(self):	
 		filename = askdirectory()
 		if(os.path.isdir(filename) == False):
-			tkMessageBox.showerror("Not a directory", filename.split("/")[-1] + " is not a directory.")
+			tkMessageBox.showerror("Not a directory", filename.split(os.path.sep)[-1] + " is not a directory.")
 			self.quit()
 
 		files = os.listdir(filename)
 		tifFiles = []
 		for file in files:
 			if( (file[-4:] == ".tif") or (file[-4:] == ".tiff") ):
-				filePath = filename + "/" + file
+				filePath = filename + os.path.sep + file
 				tifFiles.append(filePath)
 		if(len(tifFiles) == 0):
 			tkMessageBox.showerror("No pictures found", "There were not TIF files found in this directory")
