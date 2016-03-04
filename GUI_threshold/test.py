@@ -7,21 +7,27 @@ import tkMessageBox
 
 import os
 
+
+
+
+
 class Application(tk.Frame):
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master)
+		self.pack()
 		self.grid()
 		self.controlsArea()		
 		self.createWidgets()
 		self.loadImages()
 		self.createPictureFrame(imagePath="q21notreat_xy01c2.tif")
+
+
 	
 	def showPicName(self):
 		index = self.pictureIndex.get(1.0,"end")
 		index = int(index.rsplit()[0]) - 1
 		image = self.filePaths[index]
 		image = image.split("/")[-1]
-		print image
 		self.pictureLabel = tk.Label(text=image)
 		self.pictureLabel.grid(column=0,row=1)
 
@@ -112,6 +118,30 @@ class Application(tk.Frame):
 		self.quitButton = tk.Button(self, text='Quit',command=self.quit)
 		self.quitButton.grid(column=1,row=3)
 
+
+
+class ControlsArea(Application):
+	def __init__(self,master=Application):
+		tk.frame.__init__(self, master)
+		self.pack()
+		filepaths = Application.filePaths
+		print filepaths		
+
+class PictureFrame(Application):
+	def __init__(self,master=Application):
+		tk.frame.__init__(self, master)
+		self.pack()
+
+
+
 app = Application()
-app.master.title('LOLOLOLOL')
-app.mainloop()  
+app.master.title('Image Thresholding')
+app.mainloop()
+
+
+
+
+
+
+
+  
