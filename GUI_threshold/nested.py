@@ -1,27 +1,15 @@
 import Tkinter as tk
-
 import cv2
 import numpy as np
-
-
-
 import matplotlib
 matplotlib.use('TkAgg')
-
-
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-
 import ttk as ttk
-
 from tkFileDialog import askdirectory
 from PIL import Image, ImageTk
-
-
 import tkMessageBox
-
 import os
-
 
 
 
@@ -56,8 +44,6 @@ class Application:
 		self.manu.controlsFrame = tk.Frame(self.manu)
 		self.manu.controlsFrame.pack(side='top')
 
-
-
 		ThreshLabel = tk.Label(self.manu.controlsFrame, text="Set threshold value")
 		ThreshLabel.pack(side='left',expand=True)	
 
@@ -91,12 +77,9 @@ class Application:
 		self.canvas = FigureCanvasTkAgg(self.hist, master = self.manu)
 		self.canvas.get_tk_widget().pack(side='top', fill=tk.BOTH, expand=1)
 
-		
-
 		# Special middle frame containing pictureframe and direction buttons
 		self.outerFrame.middleFrame = tk.Frame(self.outerFrame)
 		self.outerFrame.middleFrame.pack(side='top',fill='both',expand=True)	
-
 
 		# Right Side
 		self.goRight = tk.Frame(self.outerFrame.middleFrame)
