@@ -39,6 +39,49 @@ class Application:
 		self.controlsArea.pack(side='top',fill='both',expand='yes')
 		
 	
+		# Creates the adaptive thresholding controls area for block size
+		self.adapt.controlsFrame = tk.Frame(self.adapt)
+		self.adapt.controlsFrame.pack(side='top')
+
+		n_hoodLabel = tk.Label(self.adapt.controlsFrame, text= "Set block size (must be odd integer): ")
+		n_hoodLabel.pack(side='left',expand=True,ipady=30)
+
+		checkBlock = self.adapt.register(self.validateBlock)
+		self.adaptBlockEntry = tk.Entry(self.adapt.controlsFrame, validate='key', validatecommand=(checkBlock,'%P'))
+		self.adaptBlockEntry.pack(side='left',expand=True)
+		self.blockSize=0
+		
+		# Creates the radio buttons for mean or gaussian adaptive weighting and the submit button
+		self.adapt.radioFrame = tk.Frame(self.adapt)
+		self.adapt.radioFrame.pack(side='top',ipady=30)
+
+		self.adapt.weighting = tk.StringVar()
+		self.adapt.weighting.set("")
+	
+		self.adapt.weighting.trace("w",self.validateAdaptRadio)
+
+	
+		tk.Radiobutton(self.adapt.radioFrame, text="Mean Weighting", variable=self.adapt.weighting, value="mean").pack(side='left')
+		tk.Radiobutton(self.adapt.radioFrame, text="Gaussian Weighting", variable=self.adapt.weighting, value="gaussian").pack(side='left')	
+
+
+		self.adaptPreview = tk.Button(self.adapt.radioFrame, text="Preview", state='disabled', command=self.adaptPreview)
+		self.adaptPreview.pack(side='left',padx=100,ipadx=40)
+
+
+		# Adds a new frame for the description and submission of the job
+		self.adapt.description = tk.Frame(self.adapt)
+		self.adapt.description.pack(side='top',fill='x',expand=False)
+
+		self.adapt.description.text = tk.Text(self.adapt.description,bg='lightgrey',height=5,  bd=0, wrap='word')
+		
+		self.adapt.description.text.insert('end',"Adaptive thresholding uses pixel neighbourhoods to threshold according to small regions of the image. This technique is especially useful when different regions of the image contain varying brightness. The pixel neighbourhoods can either be measured simply as the mean or using a gaussian weighted sum.")
+		
+		self.adapt.description.text.pack(side="left",fill='x',expand=False)
+
+		self.adapt.description.submit = tk.Button(self.adapt.description, text="submit",state='disabled')
+		self.adapt.description.submit.pack(side="left",fill='both',expand=True)
+
 		# Creating the controls area for the manual input
 		self.manu.controlsFrame = tk.Frame(self.manu)
 		self.manu.controlsFrame.pack(side='top')
@@ -53,6 +96,7 @@ class Application:
 
 		self.manuThreshButton = tk.Button(self.manu.controlsFrame, text="Preview",state='disabled',command=self.manuPreview)
 		self.manuThreshButton.pack(side='left',expand=False, fill='x')
+
 
 
 		# Adds a new frame for the description and submission of the job
@@ -100,7 +144,7 @@ class Application:
 
 		self.pictureFrame.raw.pack_propagate(0)
 
-		self.pictureFrame.thresh = tk.LabelFrame(self.pictureFrame,text="Thresholded Region (in blue)", padx=5, pady=5, height=500,width=500)
+		self.pictureFrame.thresh = tk.LabelFrame(self.pictureFrame,text="Thresholded Region (included areas in blue)", padx=5, pady=5, height=500,width=500)
 		self.pictureFrame.thresh.pack(side='right',expand=True,fill='both')
 
 		self.pictureFrame.thresh.pack_propagate(0)
@@ -126,7 +170,25 @@ class Application:
 
 		self.pictureInfo.indexText = tk.Label(self.pictureInfo,text="")
 		self.pictureInfo.indexText.pack(side='right',fill='y',expand=0,ipadx="100")
+
+
 	
+	def adaptPreview(self):
+		if (self.adapt.weighting.get() == "mean"):
+			threshPic = cv2.adaptiveThreshold(self.img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,self.blockSize,5)
+		else:
+			threshPic = cv2.adaptiveThreshold(self.img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,self.blockSize,5)
+			
+		colorPic = np.zeros((2048,2048,4), dtype = 'uint8' )
+		colorPic[:,:,0:1]=0
+		colorPic[:,:,2] = threshPic
+		colorPic[:,:,3] = 255
+		threshPic = Image.fromarray(colorPic)
+		threshPic.convert("RGBA")
+		img = threshPic.resize((500,500), Image.ANTIALIAS)
+		img = ImageTk.PhotoImage(img)
+		self.threshPic = img
+		self.pictureFrame.transPicture.configure(image=self.threshPic)
 
 	def manuPreview(self):
 		ret,threshPic = cv2.threshold(self.img,float(self.manuThresh),255,cv2.THRESH_BINARY)	
@@ -142,12 +204,42 @@ class Application:
 		self.pictureFrame.transPicture.configure(image=self.threshPic)
 		self.loadHist()
 
+
+	def validateAdaptRadio(self,*args):
+		print "radio changed: ",self.adapt.weighting.get(),self.blockSize
+		self.validateBlock(self.adaptBlockEntry.get())
+
+
+	def validateBlock(self,P):
+		if(P==""):
+			self.adapt.description.submit.config(state='disabled')
+			self.adaptPreview.config(state='disabled')
+			return True
+		elif(not P.isdigit()):
+			self.adapt.description.submit.config(state='disabled')
+			self.adaptPreview.config(state='disabled')
+			return True	
+		elif((int(P) % 2 == 1)  and (self.adapt.weighting.get() != "")):
+			self.adapt.description.submit.config(state='normal')
+			self.adaptPreview.config(state='normal')
+			self.blockSize = int(P)
+			print "weighting is: ------",self.adapt.weighting.get(),"------"
+			return True
+		else:
+			self.adapt.description.submit.config(state='disabled')
+			self.adaptPreview.config(state='disabled')
+			return True
+
 	def validate(self,P):
 		if(P == ""):
 			self.manuThreshButton.config(state='disabled')
 			self.manu.description.submit.config(state='disabled')
 			return True
-		if(int(P)<256) and(int(P >= 0)):
+		elif(not P.isdigit()):
+			self.manuThreshButton.config(state='disabled')
+			self.manu.description.submit.config(state='disabled')
+			return True
+		elif(int(P)<256) and(int(P >= 0)):
 			self.manuThreshButton.config(state='normal')
 			self.manuThresh=P
 			self.manu.description.submit.config(state='normal')
