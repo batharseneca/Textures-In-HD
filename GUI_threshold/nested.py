@@ -65,7 +65,7 @@ class Application:
 		
 		self.manu.description.text.pack(side="left",fill='x',expand=False)
 
-		self.manu.description.submit = tk.Button(self.manu.description, text="submit")
+		self.manu.description.submit = tk.Button(self.manu.description, text="submit",state='disabled')
 		self.manu.description.submit.pack(side="left",fill='both',expand=True)
 	
 		# Creating the histogram template
@@ -87,14 +87,27 @@ class Application:
 		self.goRight.button.pack(side='right',fill='both',expand=True)		
 
 		# Picture Frame
-		self.pictureFrame = tk.Frame(self.outerFrame.middleFrame,width=400,height=400)
-		self.pictureFrame.pack(side='right',fill='both',expand='yes')
-		
-		self.pictureFrame.picture = tk.Label(self.pictureFrame)
-		self.pictureFrame.picture.place(relx=0.5,rely=0.5,anchor='center')
+		self.pictureFrame = tk.Frame(self.outerFrame.middleFrame,width=1000,height=500)
+		self.pictureFrame.pack(side='right',expand=False)
 
-		self.pictureFrame.transPicture = tk.Label(self.pictureFrame)
-		self.pictureFrame.transPicture.place(relx=0.5,rely=0.5, anchor='center')
+		self.pictureFrame.pack_propagate(0)
+	
+		self.pictureFrame.raw = tk.LabelFrame(self.pictureFrame,text="Raw Image", padx=5, pady=5, height=500,width=500)
+		self.pictureFrame.raw.pack(side='right',fill='both',expand=True)
+		self.pictureFrame.picture = tk.Label(self.pictureFrame.raw)
+		self.pictureFrame.picture.pack(side='right')
+
+
+		self.pictureFrame.raw.pack_propagate(0)
+
+		self.pictureFrame.thresh = tk.LabelFrame(self.pictureFrame,text="Thresholded Region (in blue)", padx=5, pady=5, height=500,width=500)
+		self.pictureFrame.thresh.pack(side='right',expand=True,fill='both')
+
+		self.pictureFrame.thresh.pack_propagate(0)
+
+		self.pictureFrame.transPicture = tk.Label(self.pictureFrame.thresh)
+		self.pictureFrame.transPicture.pack(side='right',fill='both',expand=True)
+		
 
 		# Left Side
 		self.goLeft = tk.Frame(self.outerFrame.middleFrame)
@@ -108,31 +121,40 @@ class Application:
 		self.pictureInfo.pack(side='bottom',fill='x',expand='no')
 
 		self.pictureInfo.picName = tk.Label(self.pictureInfo, text = "")
-		self.pictureInfo.picName.pack(side='left',fill='both',expand='yes')
+		self.pictureInfo.picName.pack(side='right',fill='y',expand=0,ipadx='100')
 
 
 		self.pictureInfo.indexText = tk.Label(self.pictureInfo,text="")
-		self.pictureInfo.indexText.pack(side='left',fill='both',expand='yes')
+		self.pictureInfo.indexText.pack(side='right',fill='y',expand=0,ipadx="100")
 	
 
 	def manuPreview(self):
 		ret,threshPic = cv2.threshold(self.img,float(self.manuThresh),255,cv2.THRESH_BINARY)	
-		#backtorgb = cv2.cvtColor(threshPic,cv2.COLOR_GRAY2RGB)	
-		threshPic = Image.fromarray(threshPic,"L")
-		self.pictureFrame.transPicture.configure(image=threshPic)
-		self.threshPic=threshPic	
+		colorPic = np.zeros((2048,2048,4), dtype = 'uint8' )
+		colorPic[:,:,0:1]=0
+		colorPic[:,:,2] = threshPic
+		colorPic[:,:,3] = 255
+		threshPic = Image.fromarray(colorPic)
+		threshPic.convert("RGBA")
+		img = threshPic.resize((500,500), Image.ANTIALIAS)
+		img = ImageTk.PhotoImage(img)
+		self.threshPic = img
+		self.pictureFrame.transPicture.configure(image=self.threshPic)
 		self.loadHist()
 
 	def validate(self,P):
 		if(P == ""):
 			self.manuThreshButton.config(state='disabled')
+			self.manu.description.submit.config(state='disabled')
 			return True
 		if(int(P)<256) and(int(P >= 0)):
 			self.manuThreshButton.config(state='normal')
 			self.manuThresh=P
+			self.manu.description.submit.config(state='normal')
 			return True
 		else:
 			self.manuThreshButton.config(state='disabled')
+			self.manu.description.submit.config(state='disabled')
 			return True
 
 	def loadHist(self):	
@@ -140,14 +162,15 @@ class Application:
 		self.plot.set_yticks([])
 		self.plot.set_xticks([])
 		self.plot.axvline(self.manuThresh, color='b',linestyle = 'solid', linewidth=2)
+		self.plot.set_xlim(xmin=0,xmax=255)
 		p = self.hist.gca()
-		p.hist(self.img.ravel(), 256)
+		p.hist(self.img.ravel(), range=[0,255],bins=256,rwidth=1, color='gray')
 		self.canvas.show()
 	
 	def loadImageArray(self):
 		index = self.index-1
 		image = self.filePaths[index]
-		img = cv2.imread(image)
+		img = cv2.imread(image,0)
 		self.img = img
 
 	def leftButton(self,event):
@@ -205,8 +228,6 @@ class Application:
 		self.pictureFrame.picture.configure(image=img)
 		self.pictureFrame.picture.picRef = img	
 
-			
-
 		self.loadPictureInfo()
 		self.loadImageArray()	
 		self.loadHist()
@@ -216,7 +237,7 @@ class Application:
 		filename = askdirectory()
 		if(os.path.isdir(filename) == False):
 			tkMessageBox.showerror("Not a directory", filename.split(os.path.sep)[-1] + " is not a directory.")
-			self.quit()
+			exit()
 
 		files = os.listdir(filename)
 		tifFiles = []
@@ -226,7 +247,7 @@ class Application:
 				tifFiles.append(filePath)
 		if(len(tifFiles) == 0):
 			tkMessageBox.showerror("No pictures found", "There were not TIF files found in this directory")
-			self.quit()
+			exit()
 		self.filePaths = tifFiles		
 		self.index=1
 		self.loadCurrentImage()	
