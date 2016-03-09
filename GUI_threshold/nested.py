@@ -79,7 +79,7 @@ class Application:
 		
 		self.adapt.description.text.pack(side="left",fill='x',expand=False)
 
-		self.adapt.description.submit = tk.Button(self.adapt.description, text="submit",state='disabled')
+		self.adapt.description.submit = tk.Button(self.adapt.description, text="Threshold!",state='disabled')
 		self.adapt.description.submit.pack(side="left",fill='both',expand=True)
 
 		# Creating the controls area for the manual input
@@ -109,7 +109,7 @@ class Application:
 		
 		self.manu.description.text.pack(side="left",fill='x',expand=False)
 
-		self.manu.description.submit = tk.Button(self.manu.description, text="submit",state='disabled')
+		self.manu.description.submit = tk.Button(self.manu.description, text="Threshold!",state='disabled')
 		self.manu.description.submit.pack(side="left",fill='both',expand=True)
 	
 		# Creating the histogram template
