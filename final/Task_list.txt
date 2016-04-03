@@ -1,0 +1,8 @@
+- Things To Work On:
+
+- BitFunction Processing                                    --> Nishanth
+
+- Saving Option for Intermediates GUI                       --> Bilal
+- Saving Option For Intermediates Functionality             --> Bilal
+- Profile Loading/Saving  GUI/Functionality (Pickle/Dill)   --> Everyone 
+- ProgressBar(TQDM GUI)                                     --> Nishanth                    

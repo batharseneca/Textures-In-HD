@@ -341,10 +341,18 @@ Designed for the Ray Truant research lab.
                         coMAT = proccessing.GLCM(img,int(nhood))                                               
                         imageTextureFeature = proccessing.haralickALL(coMAT)
                         print imageTextureFeature
-                        outputPath = self.config.directory.split("/")
-                        filename = outputPath[-1]
-                        filename = "Features " + filename + ".csv"
-                        np.savetxt(filename, imageTextureFeature, delimiter=",")
+                        ##outputPath = self.config.directory.split(os.path.sep)
+                        ##filename = outputPath[-1]
+                        ##filename = "Features " + filename + ".csv"
+                        filename = "test.csv"                        
+                        f = open(filename, 'a')                                        
+                        imageName = image
+                        for features in imageTextureFeature:
+                            modFeature = str(features)
+                            imageTextureFeature[imageTextureFeature.index(features)] = modFeature                            
+                        imageTextureFeature = [imageName] + imageTextureFeature 
+                        f.write(",".join(imageTextureFeature) + "\n")
+                        f.close                        
                 # Resets Labels and updates Image Counter
                 for counter in range (0,len(stepsArray)):
                     label[stepsArray[counter] + "a"].config(text='Pending')
