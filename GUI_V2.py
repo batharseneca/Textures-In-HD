@@ -315,13 +315,13 @@ Designed for the Ray Truant research lab.
             proccessing = ProcessingFunctions()
             for image in self.tifFiles:
                 # Updates Image Counter
-                labelImageProcess = tk.Label(self.outerFrame4, text="Processing Image: " + str(imageCount) + " Of " + str(len(self.tifFiles)) + " Images" )
+                labelImageProcess.config(text="Processing Image: " + str(imageCount) + " Of " + str(len(self.tifFiles)) + " Images")
                 # First Checks for BitCoversion Selection
                 if (Config.CFGbitConversion == 1):
-                    img = Image.open(image)
+                    img = cv2.imread(image,0)
                     # If Image is not already 8 bit will convert
-                    if proccessing.check8bitImage != "False":
-                        img = proccessing.convertTo8bit(image)
+                    if proccessing.check8bitImage(img) != "False":
+                        img = proccessing.convertTo8bit(img)
                 # Check if Adaptive or Manual Thresholding is Selected
                 if (Config.CFGadaptThresh == 1):
                     # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
@@ -330,12 +330,12 @@ Designed for the Ray Truant research lab.
                         label[stepsArray[1] + "a"].config(text='In Progress')
                     # If bitcoversion not selected img is not yet open! 
                     if (Config.CFGbitConversion == 0):
-                        img = Image.open(image)
+                        img = cv2.imread(image,0)
                     # Checks if Mean or Gaussian selected and performs thresholding
                     if (Config.AdaptWeighting == "mean" ):
-                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,Config.AdaptiveBlockSize,5)
+                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,int(Config.AdaptiveBlockSize),5)
                     else:
-                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,Config.AdaptiveBlockSize,5)
+                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,int(Config.AdaptiveBlockSize),5)
                 elif (Config.CFGmanuThresh == 1):
                     # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
                     if (stepsArray[0] == "Bit Conversion"):
@@ -343,7 +343,7 @@ Designed for the Ray Truant research lab.
                         label[stepsArray[1] + "a"].config(text='In Progress')
                     # If bitcoversion not selected img is not yet open!   
                     if (Config.CFGbitConversion == 0):
-                        img = Image.open(image)
+                        img = cv2.imread(image,0)
                     # Performs thresholding
                     ret,img = cv2.threshold(img,float(Config.ManuThresholdValue),255,cv2.THRESH_BINARY)
                 # Check if Texture Analysis was selected
@@ -361,7 +361,7 @@ Designed for the Ray Truant research lab.
                             label[stepsArray[1] + "a"].config(text='In Progress')                 
                     # If nothing was done previously image is not yet open!   
                     if (Config.CFGbitConversion == 0 and Config.CFGadaptThresh == 0 and Config.CFGmanuThresh == 0):
-                        img = Image.open(image)
+                        img = cv2.imread(image,0)
                     # Will save values into a row in a file named by filepath of dataset for each neighborhood size 
                     # ###### Would defintely be faster if all calculated and stored then file opened only once file IO is a heavy strain! ###### #
                     for nhood in Config.TextureNeighborhoods:
@@ -375,7 +375,14 @@ Designed for the Ray Truant research lab.
                 for counter in range (0,len(stepsArray)):
                     label[stepsArray[counter] + "a"].config(text='Pending')
                 label[stepsArray[0] + "a"].config(text='In Progress')
-                imageCount +=1              
+                imageCount +=1
+                #Testing
+                print imageCount
+            #Testing in STDOUT
+            print "TASK IS DONE!"
+            for counter in range (0,len(stepsArray)):
+                label[stepsArray[counter] + "a"].config(text='Completed')
+            
 
                 
 
@@ -803,7 +810,7 @@ class ThresholdAnalysis():
 # All the Processing Code - Need to Ensure All Latest Versions Used # 
 class ProcessingFunctions():
 
-    def check8bitImage(image):
+    def check8bitImage(self,image):
         if(image.dtype == np.dtype("uint8")):
             return True
         else:
@@ -811,7 +818,7 @@ class ProcessingFunctions():
 
 
             
-    def convertTo8bit(image):	
+    def convertTo8bit(self,image):	
         image = image.astype(np.uint8)
         return image
         
