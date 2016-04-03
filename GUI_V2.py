@@ -320,8 +320,8 @@ Designed for the Ray Truant research lab.
                 if (Config.CFGbitConversion == 1):
                     img = Image.open(image)
                     # If Image is not already 8 bit will convert
-                    if processing.check8bitImage != "False":
-                        img = processing.convertTo8bit(image)
+                    if proccessing.check8bitImage != "False":
+                        img = proccessing.convertTo8bit(image)
                 # Check if Adaptive or Manual Thresholding is Selected
                 if (Config.CFGadaptThresh == 1):
                     # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
@@ -347,7 +347,7 @@ Designed for the Ray Truant research lab.
                     # Performs thresholding
                     ret,img = cv2.threshold(img,float(Config.ManuThresholdValue),255,cv2.THRESH_BINARY)
                 # Check if Texture Analysis was selected
-                if (Config.CFGtextureAnalysis = 1):
+                if (Config.CFGtextureAnalysis == 1):
                     # Updates Labels
                     if (stepsArray[0] == "Manual Thresholding" or stepsArray[0] == "Adaptive Thresholding"):
                         label[stepsArray[0] + "a"].config(text='Completed')
@@ -365,8 +365,8 @@ Designed for the Ray Truant research lab.
                     # Will save values into a row in a file named by filepath of dataset for each neighborhood size 
                     # ###### Would defintely be faster if all calculated and stored then file opened only once file IO is a heavy strain! ###### #
                     for nhood in Config.TextureNeighborhoods:
-                        coMAT = processing.GLCM(img,nhood)
-                        imageTextureFeature = processing.haralickALL(coMAT)
+                        coMAT = proccessing.GLCM(img,nhood)
+                        imageTextureFeature = proccessing.haralickALL(coMAT)
                         outputPath = self.config.directory.split("/")
                         filename = outputPath[-1]
                         filename = "Features" + filename
@@ -817,7 +817,7 @@ class ProcessingFunctions():
         
         
     
-    def GLCM(Img,nhood):
+    def GLCM(self,Img,nhood):
         CoMatDim=(np.amax(Img)+1,np.amax(Img)+1) 
         CoMat=np.zeros(CoMatDim,dtype=np.int) #Initialize CoMat as matrix of zeros
 
@@ -890,7 +890,7 @@ class ProcessingFunctions():
  
  
  
-    def haralickALL(CoMat):
+    def haralickALL(self,CoMat):
         np.array([
             ASM(CoMat),
             contrast(CoMat),
@@ -915,7 +915,7 @@ class ProcessingFunctions():
 
 
     ## Angular Second Moment(ASM) / Energy is a measure of homogeneity in an image
-    def ASM(CoMat):
+    def ASM(self,CoMat):
         val=0
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
@@ -923,7 +923,7 @@ class ProcessingFunctions():
         return val
 	
     ## Contrast adds the comatrival, but favours when values are away from the diagonal
-    def contrast(CoMat):
+    def contrast(self,CoMat):
         val=0
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
@@ -931,7 +931,7 @@ class ProcessingFunctions():
         return val
 
     ## Local homogeneity (Inverse Difference Moment)
-    def IDM(CoMat):
+    def IDM(self,CoMat):
         val=0
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
@@ -939,7 +939,7 @@ class ProcessingFunctions():
         return val
         
     ## Entropy (Log function had to have a +1 to ensure that values are not zero)
-    def entropy(CoMat):
+    def entropy(self,CoMat):
         val=0
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
@@ -947,7 +947,7 @@ class ProcessingFunctions():
         return val * (-1)
 
     ## Horizontal Mean
-    def xmean(CoMat):
+    def xmean(self,CoMat):
         val = 0
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
@@ -955,7 +955,7 @@ class ProcessingFunctions():
         return val
 
     ## Vertical Mean
-    def ymean(CoMat):
+    def ymean(self,CoMat):
         val = 0
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
@@ -963,7 +963,7 @@ class ProcessingFunctions():
         return val
 
     ## Horizontal Standard Deviation
-    def xstdev(CoMat):
+    def xstdev(self,CoMat):
         val = 0
         xmeanVal = xmean(CoMat)
         for i in range(0,CoMat.shape[0]-1):
@@ -972,7 +972,7 @@ class ProcessingFunctions():
         return val	
             
     # Vertical Standard Deviation	
-    def ystdev(CoMat):
+    def ystdev(self,CoMat):
         val = 0
         ymeanVal = ymean(CoMat)
         for i in range(0,CoMat.shape[0]-1):
@@ -981,7 +981,7 @@ class ProcessingFunctions():
         return val
 
     ## The actual correlation function, requires the above calculations
-    def CORR(CoMat):
+    def CORR(self,CoMat):
         val = 0
         xmeanVal = xmean(CoMat)
         ymeanVal = ymean(CoMat)
@@ -995,7 +995,7 @@ class ProcessingFunctions():
         return val	
 
     # Total Mean
-    def mean(CoMat):
+    def mean(self,CoMat):
         val = 0
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
@@ -1005,7 +1005,7 @@ class ProcessingFunctions():
         return mean
 
     # Sum of Squares, Variance
-    def variance(CoMat):
+    def variance(self,CoMat):
         val = 0
         meanVal = mean(CoMat)
         for i in range(0,CoMat.shape[0]-1):
@@ -1014,7 +1014,7 @@ class ProcessingFunctions():
         return val
 
     # P(x+y) is the diagonal sum of the matrix.
-    def xPlusY(CoMat,kValue):
+    def xPlusY(self,CoMat,kValue):
         val = 0
         if(kValue < CoMat.shape[0]):
             i=kValue
@@ -1034,28 +1034,28 @@ class ProcessingFunctions():
             return val
 
     # Sum Average	
-    def sumAverage(CoMat):
+    def sumAverage(self,CoMat):
         val = 0
         for k in range(0,CoMat.shape[0]*2-2):
             val += xPlusY(CoMat,k) * k
         return val
 
     # Sum Entropy (Log function had to have a +1 to ensure that values are not zero)
-    def sumEntropy(CoMat):
+    def sumEntropy(self,CoMat):
         val = 0
         for k in range(0,CoMat.shape[0]*2-2):
             val += xPlusY(CoMat,k)* mt.log(xPlusY(CoMat,k)+1)
         return val*(-1)
         
     # Differencce Entropy (Log function had to have a +1 to ensure that values are not zero)
-    def difEntropy(CoMat):
+    def difEntropy(self,CoMat):
         val = 0
         for k in range(0,CoMat.shape[0]-1):
             val += xPlusY(CoMat,k)* mt.log(xPlusY(CoMat,k)+1)
         return val*(-1)
 
     # Inertia
-    def inertia(CoMat):
+    def inertia(self,CoMat):
         val = 0
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
@@ -1063,7 +1063,7 @@ class ProcessingFunctions():
         return val
        
     # Cluster Shade
-    def clusterShade(CoMat):
+    def clusterShade(self,CoMat):
         val = 0
         ux = xmean(CoMat)
         uy = ymean(CoMat)
@@ -1073,7 +1073,7 @@ class ProcessingFunctions():
         return val        
 
     # Cluster Prominance
-    def clusterProm(CoMat):
+    def clusterProm(self,CoMat):
         val = 0
         ux = xmean(CoMat)
         uy = ymean(CoMat)
