@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
+import math as mt
 
+from config import *
 
 # All the Processing Code - Need to Ensure All Latest Versions Used # 
 class ProcessingFunctions():
@@ -10,7 +12,6 @@ class ProcessingFunctions():
             return True
         else:
             return False
-
 
             
     def convertTo8bit(self,image):	
@@ -83,7 +84,7 @@ class ProcessingFunctions():
             CoMat[ImgFlat1[d],ImgFlat2[d]]=CoMat[ImgFlat1[d],ImgFlat2[d]]+1
 
         CoMat = np.delete(CoMat,(0),axis=0)
-        CoMat = np.delete(CoMat(0),axis=1) 		
+        CoMat = np.delete(CoMat,(0),axis=1) 		
         
         CoMat=np.divide(CoMat,np.sum(CoMat)) #Normalize CoMat#
         
@@ -94,24 +95,24 @@ class ProcessingFunctions():
  
     def haralickALL(self,CoMat):
         np.array([
-            ASM(CoMat),
-            contrast(CoMat),
-            IDM(CoMat),
-            entropy(CoMat),
-            xmean(CoMat),
-            ymean(CoMat),
-            xstdev(CoMat),
-            ystdev(CoMat),
-            CORR(CoMat),
-            mean(CoMat),
-            variance(CoMat),
-            xPlusY(CoMat),
-            sumAverage(CoMat),
-            sumEntropy(CoMat),
-            difEntropy(CoMat),
-            inertia(CoMat),
-            clusterShade(CoMat),
-            clusterProm(CoMat),
+            self.ASM(CoMat),
+            self.contrast(CoMat),
+            self.IDM(CoMat),
+            self.entropy(CoMat),
+            self.xmean(CoMat),
+            self.ymean(CoMat),
+            self.xstdev(CoMat),
+            self.ystdev(CoMat),
+            self.CORR(CoMat),
+            self.mean(CoMat),
+            self.variance(CoMat),
+            #self.xPlusY(CoMat),
+            #self.sumAverage(CoMat),
+            #self.sumEntropy(CoMat),
+            #self.difEntropy(CoMat),
+            self.inertia(CoMat),
+            self.clusterShade(CoMat),
+            self.clusterProm(CoMat),
         ])
         return np.array
 
@@ -167,7 +168,7 @@ class ProcessingFunctions():
     ## Horizontal Standard Deviation
     def xstdev(self,CoMat):
         val = 0
-        xmeanVal = xmean(CoMat)
+        xmeanVal = self.xmean(CoMat)
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
                 val += ((i-xmeanVal)**2) * CoMat[i][j]
@@ -176,7 +177,7 @@ class ProcessingFunctions():
     # Vertical Standard Deviation	
     def ystdev(self,CoMat):
         val = 0
-        ymeanVal = ymean(CoMat)
+        ymeanVal = self.ymean(CoMat)
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
                 val += ((j-ymeanVal)**2) * CoMat[i][j]
@@ -185,11 +186,11 @@ class ProcessingFunctions():
     ## The actual correlation function, requires the above calculations
     def CORR(self,CoMat):
         val = 0
-        xmeanVal = xmean(CoMat)
-        ymeanVal = ymean(CoMat)
+        xmeanVal = self.xmean(CoMat)
+        ymeanVal = self.ymean(CoMat)
         
-        xStdVal = xstdev(CoMat)
-        yStdVal = ystdev(CoMat)
+        xStdVal = self.xstdev(CoMat)
+        yStdVal = self.ystdev(CoMat)
         
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
@@ -209,7 +210,7 @@ class ProcessingFunctions():
     # Sum of Squares, Variance
     def variance(self,CoMat):
         val = 0
-        meanVal = mean(CoMat)
+        meanVal = self.mean(CoMat)
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
                 val += (i-meanVal)**2 * CoMat[i][j]
@@ -239,14 +240,14 @@ class ProcessingFunctions():
     def sumAverage(self,CoMat):
         val = 0
         for k in range(0,CoMat.shape[0]*2-2):
-            val += xPlusY(CoMat,k) * k
+            val += self.xPlusY(CoMat,k) * k
         return val
 
     # Sum Entropy (Log function had to have a +1 to ensure that values are not zero)
     def sumEntropy(self,CoMat):
         val = 0
         for k in range(0,CoMat.shape[0]*2-2):
-            val += xPlusY(CoMat,k)* mt.log(xPlusY(CoMat,k)+1)
+            val += self.xPlusY(CoMat,k)* mt.log(self.xPlusY(CoMat,k)+1)
         return val*(-1)
         
     # Differencce Entropy (Log function had to have a +1 to ensure that values are not zero)
@@ -267,8 +268,8 @@ class ProcessingFunctions():
     # Cluster Shade
     def clusterShade(self,CoMat):
         val = 0
-        ux = xmean(CoMat)
-        uy = ymean(CoMat)
+        ux = self.xmean(CoMat)
+        uy = self.ymean(CoMat)
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
                 val += (i + j - ux - uy)**3 * CoMat[i][j]
@@ -277,8 +278,8 @@ class ProcessingFunctions():
     # Cluster Prominance
     def clusterProm(self,CoMat):
         val = 0
-        ux = xmean(CoMat)
-        uy = ymean(CoMat)
+        ux = self.xmean(CoMat)
+        uy = self.ymean(CoMat)
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
                 val += (i + j - ux - uy)**4 * CoMat[i][j]

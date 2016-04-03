@@ -12,6 +12,8 @@ from PIL import Image, ImageTk
 import tkFont
 import re
 
+from config import *
+
 class ThresholdAnalysis(): 
  
     def makeTemplateThresh(self,root):

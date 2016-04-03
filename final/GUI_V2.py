@@ -12,12 +12,14 @@ import tkMessageBox
 from PIL import Image, ImageTk
 import tkFont
 import re
+from tqdm import tqdm
 
 
 ## Import our classes!!
 from config import Config
 from texture import TextureAnalysis
 from threshold import ThresholdAnalysis
+from process import ProcessingFunctions
 
         
 class Introduction(Config):
@@ -284,7 +286,7 @@ Designed for the Ray Truant research lab.
 # Main Processing Code # - ADDITIONAL NOTE : IF at any time something is the only step or last step its easy to check by checking if stepsArray[-1] = w.e you are doing!!!!!
             
             proccessing = ProcessingFunctions()
-            for image in self.tifFiles:
+            for image in tqdm(self.tifFiles):
                 # Updates Image Counter
                 labelImageProcess.config(text="Processing Image: " + str(imageCount) + " Of " + str(len(self.tifFiles)) + " Images")
                 # First Checks for BitCoversion Selection
@@ -336,24 +338,26 @@ Designed for the Ray Truant research lab.
                     # Will save values into a row in a file named by filepath of dataset for each neighborhood size 
                     # ###### Would defintely be faster if all calculated and stored then file opened only once file IO is a heavy strain! ###### #
                     for nhood in Config.TextureNeighborhoods:
-                        coMAT = proccessing.GLCM(img,nhood)
+                        coMAT = proccessing.GLCM(img,int(nhood))
                         imageTextureFeature = proccessing.haralickALL(coMAT)
+                        print imageTextureFeature
                         outputPath = self.config.directory.split("/")
                         filename = outputPath[-1]
                         filename = "Features" + filename
-                        numpy.savetxt(filename, a, delimiter=",")
+                        np.savetxt(filename, imageTextureFeature, delimiter=",")
                 # Resets Labels and updates Image Counter
                 for counter in range (0,len(stepsArray)):
                     label[stepsArray[counter] + "a"].config(text='Pending')
                 label[stepsArray[0] + "a"].config(text='In Progress')
                 imageCount +=1
                 #Testing
-                print imageCount
+                #print imageCount
             #Testing in STDOUT
             print "TASK IS DONE!"
             for counter in range (0,len(stepsArray)):
                 label[stepsArray[counter] + "a"].config(text='Completed')
-            
+            self.myParent.deiconify()
+            self.runWindow.destroy()
 
  
  

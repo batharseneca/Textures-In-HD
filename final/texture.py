@@ -1,6 +1,8 @@
 import Tkinter as tk
 import re
 
+from config import *
+
 class TextureAnalysis():                
     def makeTemplateTexture(self,root):
         self.textureWindow = tk.Toplevel(root)
