@@ -22,7 +22,7 @@ class ProcessingFunctions():
     
     def GLCM(self,Img,nhood):
         CoMatDim=(np.amax(Img)+1,np.amax(Img)+1) 
-        CoMat=np.zeros(CoMatDim,dtype=np.int) #Initialize CoMat as matrix of zeros
+        CoMat=np.zeros(CoMatDim,dtype=np.uint) #Initialize CoMat as matrix of zeros
 
         #First Direction
         ImgCopy1RowKeep=np.arange(nhood,Img.shape[0])
@@ -84,17 +84,18 @@ class ProcessingFunctions():
             CoMat[ImgFlat1[d],ImgFlat2[d]]=CoMat[ImgFlat1[d],ImgFlat2[d]]+1
 
         CoMat = np.delete(CoMat,(0),axis=0)
-        CoMat = np.delete(CoMat,(0),axis=1) 		
+        CoMat = np.delete(CoMat,(0),axis=1) 
+
+        CoMat = CoMat.astype(np.float_)
         
         CoMat=np.divide(CoMat,np.sum(CoMat)) #Normalize CoMat#
         
-        return(CoMat)
- 
+        return CoMat
  
  
  
     def haralickALL(self,CoMat):
-        np.array([
+        outputFeatures =[
             self.ASM(CoMat),
             self.contrast(CoMat),
             self.IDM(CoMat),
@@ -106,15 +107,14 @@ class ProcessingFunctions():
             self.CORR(CoMat),
             self.mean(CoMat),
             self.variance(CoMat),
-            #self.xPlusY(CoMat),
-            #self.sumAverage(CoMat),
-            #self.sumEntropy(CoMat),
-            #self.difEntropy(CoMat),
+            self.sumAverage(CoMat),
+            self.sumEntropy(CoMat),
+            self.difEntropy(CoMat),
             self.inertia(CoMat),
             self.clusterShade(CoMat),
             self.clusterProm(CoMat),
-        ])
-        return np.array
+        ]
+        return outputFeatures
 
 
     ## Angular Second Moment(ASM) / Energy is a measure of homogeneity in an image
@@ -254,7 +254,7 @@ class ProcessingFunctions():
     def difEntropy(self,CoMat):
         val = 0
         for k in range(0,CoMat.shape[0]-1):
-            val += xPlusY(CoMat,k)* mt.log(xPlusY(CoMat,k)+1)
+            val += self.xPlusY(CoMat,k)* mt.log(self.xPlusY(CoMat,k)+1)
         return val*(-1)
 
     # Inertia

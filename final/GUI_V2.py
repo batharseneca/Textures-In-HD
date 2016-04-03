@@ -250,7 +250,7 @@ Designed for the Ray Truant research lab.
         configArray = self.config.returnMethod()
         directoryChoice, bitChoice, adaptiveThresh, manuThresh, textureAnalysis = configArray
         print "Directory Select? ", directoryChoice, "\n", "bitChoice Select? ", bitChoice, "\n", "manual Thresholding Select? ", manuThresh, "\n", "adaptive Thresholding Select? ", adaptiveThresh, "\n", "Texture Analysis Select? ", textureAnalysis, "\n"
-                
+        print "Neighborhood Size: ", Config.TextureNeighborhoods      
         checkArray = ['Directory', 'Bit Conversion', 'Adaptive Thresholding', 'Manual Thresholding', 'Texture Analysis']
         stepsArray = []
         for index in range (1,5):
@@ -338,20 +338,18 @@ Designed for the Ray Truant research lab.
                     # Will save values into a row in a file named by filepath of dataset for each neighborhood size 
                     # ###### Would defintely be faster if all calculated and stored then file opened only once file IO is a heavy strain! ###### #
                     for nhood in Config.TextureNeighborhoods:
-                        coMAT = proccessing.GLCM(img,int(nhood))
+                        coMAT = proccessing.GLCM(img,int(nhood))                                               
                         imageTextureFeature = proccessing.haralickALL(coMAT)
                         print imageTextureFeature
                         outputPath = self.config.directory.split("/")
                         filename = outputPath[-1]
-                        filename = "Features" + filename
+                        filename = "Features " + filename + ".csv"
                         np.savetxt(filename, imageTextureFeature, delimiter=",")
                 # Resets Labels and updates Image Counter
                 for counter in range (0,len(stepsArray)):
                     label[stepsArray[counter] + "a"].config(text='Pending')
                 label[stepsArray[0] + "a"].config(text='In Progress')
                 imageCount +=1
-                #Testing
-                #print imageCount
             #Testing in STDOUT
             print "TASK IS DONE!"
             for counter in range (0,len(stepsArray)):
