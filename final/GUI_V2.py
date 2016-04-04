@@ -356,12 +356,17 @@ Designed for the Ray Truant research lab.
                             date = time.strftime("%d_%m_%Y")    
                             filepath = os.path.dirname(os.path.abspath(__file__))
                             
+                            outputPath = self.config.directory.replace("/","*")
+                            outputPath = outputPath.replace("\\","*")
+                            outputArray = outputPath.split("*")
+                            outputPath = outputArray[-1]
+                            
                             imageName = image.replace("/","*")
                             imageName = imageName.replace("\\","*")                        
                             name_Array = imageName.split("*")
                             imageName = name_Array[-1]
                             
-                            filepath = filepath + os.path.sep + "8BIT_Converted_Images" + os.path.sep + date + "_8BIT_" 
+                            filepath = filepath + os.path.sep + "Results" + os.path.sep + "8BIT_Converted_Images" + os.path.sep + date + outputPath + "_8BIT_" 
                             try: 
                                 os.makedirs(filepath)
                             except OSError:
@@ -387,8 +392,13 @@ Designed for the Ray Truant research lab.
                         
                     
                     if (Config.threshO == 1): 
-                        date = time.strftime("%d_%m_%Y")
+                        date = time.strftime("%d_%m_%Y_")
                         filepath = os.path.dirname(os.path.abspath(__file__))
+                        
+                        outputPath = self.config.directory.replace("/","*")
+                        outputPath = outputPath.replace("\\","*")
+                        outputArray = outputPath.split("*")
+                        outputPath = outputArray[-1]
                         
                         imageName = image.replace("/","*")
                         imageName = imageName.replace("\\","*")                        
@@ -396,7 +406,7 @@ Designed for the Ray Truant research lab.
                         imageName = name_Array[-1]
                        
                         
-                        filepath = filepath + os.path.sep + "Thresholded_Images" + os.path.sep + date + "_Adaptive_" + str(Config.AdaptWeighting) + "_" + str(Config.AdaptiveBlockSize)
+                        filepath = filepath + os.path.sep + "Results" + os.path.sep + "Thresholded_Images" + os.path.sep + date + outputPath + "_Adaptive_" + str(Config.AdaptWeighting) + "_" + str(Config.AdaptiveBlockSize)
                         try: 
                             os.makedirs(filepath)
                         except OSError:
@@ -418,15 +428,20 @@ Designed for the Ray Truant research lab.
                     
                     
                     if (Config.threshO == 1): 
-                        date = time.strftime("%d_%m_%Y")
+                        date = time.strftime("%d_%m_%Y_")
                         filepath = os.path.dirname(os.path.abspath(__file__))
+                        
+                        outputPath = self.config.directory.replace("/","*")
+                        outputPath = outputPath.replace("\\","*")
+                        outputArray = outputPath.split("*")
+                        outputPath = outputArray[-1]
                         
                         imageName = image.replace("/","*")
                         imageName = imageName.replace("\\","*")                        
                         name_Array = imageName.split("*")
                         imageName = name_Array[-1]
                                                 
-                        filepath = filepath + os.path.sep + "Thresholded_Images" + os.path.sep + date + "_Manual_" + str(Config.ManuThresholdValue) 
+                        filepath = filepath + os.path.sep + "Results" + os.path.sep + "Thresholded_Images" + os.path.sep + date + outputPath + "_Manual_" + str(Config.ManuThresholdValue) 
                         try: 
                             os.makedirs(filepath)
                         except OSError:
@@ -456,20 +471,35 @@ Designed for the Ray Truant research lab.
                     for nhood in Config.TextureNeighborhoods:
                         coMAT = proccessing.GLCM(img,int(nhood))                                               
                         imageTextureFeature = proccessing.haralickALL(coMAT)
- #                      #print imageTextureFeature
-                        outputPath = self.config.directory.split("/")
-                        if (outputPath == self.config.directory):
-                            outputPath = self.config.directory.split("\\")
-                        filename = outputPath[-1]
+                        
+                        filepath = os.path.dirname(os.path.abspath(__file__))
+                                                                  
+                        outputPath = self.config.directory.replace("/","*")
+                        outputPath = outputPath.replace("\\","*")
+                        outputArray = outputPath.split("*")
+                        outputPath = outputArray[-1]                        
+                        filename = outputPath
+                        
                         date = time.strftime("%d_%m_%Y")
-                        filename = date + "_" + filename + ".csv"   
-                        f = open(filename, 'a')                                        
-                        imageName = image                        
-                        name_Array = imageName.split("/")
-                        if (name_Array == imageName):
-                            name_Array = imageName.split("\\")
+                        filename = date + "_" + filename + ".csv" 
+
+                        filepath = filepath + os.path.sep + "Results" + os.path.sep + "Texture_Analysis" + os.path.sep + date  
+                        try: 
+                            os.makedirs(filepath)
+                        except OSError:
+                            if not os.path.isdir(filepath):
+                                raise      
+                        
+                        f = open(os.path.join(filepath, filename), "a")
+                        #f = open(filename, 'a')                                        
+                        
+                        imageName = image.replace("/","*")
+                        imageName = imageName.replace("\\","*")                        
+                        name_Array = imageName.split("*")
                         imageName = name_Array[-1]   
+                        
                         imageName = imageName + "_nhood_" + nhood
+                        
                         for features in imageTextureFeature:
                             modFeature = str(features)
                             imageTextureFeature[imageTextureFeature.index(features)] = modFeature                            

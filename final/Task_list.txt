@@ -6,3 +6,10 @@
 - Saving Option For Intermediates Functionality             --> Bilal
 - Profile Loading/Saving  GUI/Functionality (Pickle/Dill)   --> Everyone 
 - ProgressBar(TQDM GUI)                                     --> Nishanth                    
+
+
+
+TESTING ISSUES SO FAR:
+
+- http://stackoverflow.com/questions/27784528/numpy-division-with-runtimewarning-invalid-value-encountered-in-double-scalars (line 197 HARALICK!)
+
