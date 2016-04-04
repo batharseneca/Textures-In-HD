@@ -2,7 +2,7 @@
 class Config: 
    
     def __init__(self):
-        Config.CFGdirectory = None
+        Config.CFGdirectory = 0
         Config.CFGbitConversion = 0
         Config.CFGadaptThresh = 0
         Config.CFGmanuThresh = 0
@@ -14,6 +14,11 @@ class Config:
         Config.AdaptWeighting = ""
         Config.ManuThresholdValue = 0 
         Config.TextureNeighborhoods = []
+        
+        # Input Variables - Used to determine Output Files Necessary to Create #
+        Config.bitO = 0
+        Config.threshO = 0
+        
            
            
     def returnMethod(self):

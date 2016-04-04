@@ -13,6 +13,7 @@ from PIL import Image, ImageTk
 import tkFont
 import re
 from tqdm import tqdm
+import time
 
 
 ## Import our classes!!
@@ -164,9 +165,28 @@ Designed for the Ray Truant research lab.
 
 # Creates a run button #
         self.runFrame = tk.Frame(self.outerFrame)
-        self.runFrame.pack(fill="x", pady=20)
-        self.runButton = tk.Button(self.runFrame, text="Run!", command=self.runConfigure)
-        self.runButton.pack(side="right", padx=20, anchor="e")
+        self.runFrame.pack(fill="x", pady=20)        
+               
+        self.runButton = tk.Button(self.runFrame, text="Run!", width=20, command=self.runConfigure)
+        self.runButton.pack(side="right", padx=20, expand=1, anchor="e")
+        
+        self.savefileLabel = tk.Label(self.runFrame, text="Please Select the Analysis Steps From Which You Wish To Retain Data Files: ")
+        self.savefileLabel.pack(side="left", padx=20, expand=1, anchor="w")
+        
+        self.bitOutput = tk.IntVar()
+        self.bitOutputCK = tk.Checkbutton(self.runFrame, text="Bit Coversion", variable=self.bitOutput, command=self.bitOutputFunction, padx=10)
+        self.bitOutputCK.configure(state="disabled")
+        self.bitOutputCK.pack(side="left",expand=1, fill="none", anchor="w")
+        
+        self.thresholdOutput = tk.IntVar()
+        self.thresholdOutputCK = tk.Checkbutton(self.runFrame, text="Thresholding", variable=self.thresholdOutput, command=self.thresholdOutputFunction, padx=10)
+        self.thresholdOutputCK.configure(state="disabled")
+        self.thresholdOutputCK.pack(side="left",expand=1, fill="none", anchor="w")
+        
+        self.textureOutput = tk.IntVar()
+        self.textureOutputCK = tk.Checkbutton(self.runFrame, text="Texture Analysis", variable=self.textureOutput, padx=10)
+        self.textureOutputCK.configure(state="disabled")
+        self.textureOutputCK.pack(side="left",expand=1, fill="none", anchor="w")
         
     
 # Methods of Introduction Class - To Enable All Settings Prior to leaving main window#  
@@ -175,30 +195,44 @@ Designed for the Ray Truant research lab.
         if(self.bitCheck.get() == 1):
             self.bitImage.pack(in_=self.bitImageFrame)
             Config.CFGbitConversion = 1
+            self.bitOutputCK.configure(state="normal")
         else:
             self.bitImage.pack_forget()
             Config.CFGbitConversion = 0
+            self.bitOutputCK.deselect()
+            self.bitOutputCK.configure(state="disabled")
+            Config.bitO = 0
     
     
     def threshFunction(self, event=None):
         if(self.threshCheck.get() == 1):
             self.threshImage.pack(in_=self.threshImageFrame)
             self.threshButton.configure(state="normal")
+            self.thresholdOutputCK.configure(state="normal")
+            
         else:
             self.threshImage.pack_forget()
             self.threshButton.configure(state="disabled")
             Config.CFGadaptThresh = 0
             Config.CFGmanuThresh = 0
+            self.thresholdOutputCK.deselect()
+            self.thresholdOutputCK.configure(state="disabled")
+            Config.threshO = 0
     
            
     def textureFunction(self, event=None):
         if(self.textureCheck.get() == 1):
             self.textureImage.pack(in_=self.textureImageFrame)
             self.textureButton.configure(state="normal")
+            self.textureOutputCK.configure(state="normal")
+            self.textureOutputCK.select()
+            self.textureOutputCK.configure(state="disabled")
         else:
             self.textureImage.pack_forget()
             self.textureButton.configure(state="disabled")
             Config.CFGtextureAnalysis = 0
+            self.textureOutputCK.deselect()
+            self.textureOutputCK.configure(state="disabled")
 
     
     def chooseDirectory(self):
@@ -231,7 +265,20 @@ Designed for the Ray Truant research lab.
 	    self.textureImage.pack_forget()
 	    Config.CFGdirectory = 0
 	    self.config = Config()
-                
+        
+    def bitOutputFunction(self,event=None):        
+        if(self.bitOutput.get() == 1):
+            Config.bitO = 1            
+        else:
+            Config.bitO = 0
+    
+    
+    def thresholdOutputFunction(self, event=None):
+        if(self.thresholdOutput.get() == 1):
+            Config.threshO = 1
+        else:
+            Config.threshO = 0
+      
                 
 # Methods to launch Settings Windows #
 
@@ -250,7 +297,9 @@ Designed for the Ray Truant research lab.
         configArray = self.config.returnMethod()
         directoryChoice, bitChoice, adaptiveThresh, manuThresh, textureAnalysis = configArray
         print "Directory Select? ", directoryChoice, "\n", "bitChoice Select? ", bitChoice, "\n", "manual Thresholding Select? ", manuThresh, "\n", "adaptive Thresholding Select? ", adaptiveThresh, "\n", "Texture Analysis Select? ", textureAnalysis, "\n"
-        print "Neighborhood Size: ", Config.TextureNeighborhoods      
+        print "Neighborhood Size: ", Config.TextureNeighborhoods
+        print "bitO: ", Config.bitO
+        print "threshO: ", Config.threshO
         checkArray = ['Directory', 'Bit Conversion', 'Adaptive Thresholding', 'Manual Thresholding', 'Texture Analysis']
         stepsArray = []
         for index in range (1,5):
@@ -259,9 +308,16 @@ Designed for the Ray Truant research lab.
         numofSteps = len(stepsArray)
       
         if (directoryChoice == 0):
-            tkMessageBox.showwarning("Warning - Invalid Parameters", "No Input Image Set Detected")
-        elif (numofSteps == 0):
-            tkMessageBox.showwarning("Warning - Invalid Parameters", "No Analysis Options Specified")
+            tkMessageBox.showwarning("Warning - Invalid Parameters", "No Input Image Set Detected")    
+        elif ( (Config.threshO == 1) and (Config.CFGadaptThresh == 0 and Config.CFGmanuThresh == 0) ):
+            tkMessageBox.showwarning("Warning - Invalid Settings", "Thresholding Parameters Must Be Configured If Selected")
+        elif ( (self.textureOutput.get() == 1) and (Config.CFGtextureAnalysis == 0) ):
+            tkMessageBox.showwarning("Warning - Invalid Settings", "Texture Analysis Parameters Must Be Configured If Selected")
+        elif (Config.CFGbitConversion == 0 and Config.CFGadaptThresh == 0 and Config.CFGmanuThresh == 0 and Config.CFGtextureAnalysis == 0):
+            tkMessageBox.showwarning("Warning - Invalid Parameters", "No Analysis Options Specified or Configured!")
+        elif (Config.bitO == 0 and Config.threshO == 0 and self.textureOutput.get() == 0):
+            tkMessageBox.showwarning("Warning - Invalid Parameters", "No Output Files Specified")
+        
         else:            
             self.myParent.withdraw()
             self.runWindow = tk.Toplevel(root)
@@ -294,7 +350,19 @@ Designed for the Ray Truant research lab.
                     img = cv2.imread(image,0)
                     # If Image is not already 8 bit will convert
                     if proccessing.check8bitImage(img) != "False":
-                        img = proccessing.convertTo8bit(img)
+                        img = proccessing.convertTo8bit(img)                    
+                        
+                        if (Config.bitO == 1):
+                            date = time.strftime("%d_%m_%Y")    
+                            filepath = os.path.dirname(os.path.abspath(__file__))
+                            imageName = image                        
+                            name_Array = imageName.split("/")
+                            if (name_Array == imageName):
+                                name_Array = imageName.split("\\")
+                            imageName = name_Array[-1]
+                            filepath = filepath + os.path.sep + "8BIT_Converted_Images" + os.path.sep + date + "_8BIT_" + imageName + ".tif"
+                            cv2.imwrite(filepath, img)
+                    
                 # Check if Adaptive or Manual Thresholding is Selected
                 if (Config.CFGadaptThresh == 1):
                     # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
@@ -309,6 +377,20 @@ Designed for the Ray Truant research lab.
                         img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,int(Config.AdaptiveBlockSize),5)
                     else:
                         img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,int(Config.AdaptiveBlockSize),5)
+                        
+                    
+                    if (Config.threshO == 1): 
+                        date = time.strftime("%d_%m_%Y")
+                        filepath = os.path.dirname(os.path.abspath(__file__))
+                        imageName = image                        
+                        name_Array = imageName.split("/")
+                        if (name_Array == imageName):
+                            name_Array = imageName.split("\\")
+                        imageName = name_Array[-1]
+                        filepath = filepath + os.path.sep + "Thresholded_Images" + os.path.sep + date + "_Adaptive_" + str(Config.AdaptWeighting) + "_" + str(Config.AdaptiveBlockSize) + "_" + imageName + ".tif"
+                        cv2.imwrite(filepath, img)
+                    
+                    
                 elif (Config.CFGmanuThresh == 1):
                     # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
                     if (stepsArray[0] == "Bit Conversion"):
@@ -319,6 +401,20 @@ Designed for the Ray Truant research lab.
                         img = cv2.imread(image,0)
                     # Performs thresholding
                     ret,img = cv2.threshold(img,float(Config.ManuThresholdValue),255,cv2.THRESH_BINARY)
+                    
+                    
+                    if (Config.threshO == 1): 
+                        date = time.strftime("%d_%m_%Y")
+                        filepath = os.path.dirname(os.path.abspath(__file__))
+                        imageName = image                        
+                        name_Array = imageName.split("/")
+                        if (name_Array == imageName):
+                            name_Array = imageName.split("\\")
+                        imageName = name_Array[-1]
+                        filepath = filepath + os.path.sep + "Thresholded_Images" + os.path.sep + date + "_Manual_" + str(Config.ManuThresholdValue) + "_" + imageName + ".tif"
+                        cv2.imwrite(filepath, img)
+                    
+                    
                 # Check if Texture Analysis was selected
                 if (Config.CFGtextureAnalysis == 1):
                     # Updates Labels
@@ -340,13 +436,20 @@ Designed for the Ray Truant research lab.
                     for nhood in Config.TextureNeighborhoods:
                         coMAT = proccessing.GLCM(img,int(nhood))                                               
                         imageTextureFeature = proccessing.haralickALL(coMAT)
-                        print imageTextureFeature
-                        ##outputPath = self.config.directory.split(os.path.sep)
-                        ##filename = outputPath[-1]
-                        ##filename = "Features " + filename + ".csv"
-                        filename = "test.csv"                        
+ #                      #print imageTextureFeature
+                        outputPath = self.config.directory.split("/")
+                        if (outputPath == self.config.directory):
+                            outputPath = self.config.directory.split("\\")
+                        filename = outputPath[-1]
+                        date = time.strftime("%d_%m_%Y")
+                        filename = date + "_" + filename + ".csv"   
                         f = open(filename, 'a')                                        
-                        imageName = image
+                        imageName = image                        
+                        name_Array = imageName.split("/")
+                        if (name_Array == imageName):
+                            name_Array = imageName.split("\\")
+                        imageName = name_Array[-1]   
+                        imageName = imageName + "_nhood_" + nhood
                         for features in imageTextureFeature:
                             modFeature = str(features)
                             imageTextureFeature[imageTextureFeature.index(features)] = modFeature                            
