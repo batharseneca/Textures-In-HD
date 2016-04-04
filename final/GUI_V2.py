@@ -39,7 +39,7 @@ class Introduction(Config):
 
         # Make a frame label for introduction
         self.infoFrame = tk.Frame(self.outerFrame)
-        font = tkFont.Font(family="Helvetica", size=8)
+        font = tkFont.Font(family="Helvetica", size=10)
         self.infoFrame.pack(side="top" ,expand=1 ,fill="x" ,pady=0)
         infoLabel = tk.Text(self.infoFrame,bg=self.myParent.cget("bg"), font=font, height=12,width=110, wrap="word",bd=0)
         infoLabel.insert("end", '''
@@ -48,7 +48,7 @@ This software enables extraction of texture features within image sets. This inv
 2. It is strongly suggested to convert images to 8 bit format prior to further analysis.
 3. Several algorithms have been proposed to efficiently threshold images. Enable thresholding and configure according to the directions to adjust the settings to best suit the image dataset provided.
 4. The final step in extracting texture features involves constructing a grey level co-occurence matrix (GLCM) from each image according to the configurations provided. From here, 13 haralick features will be created and outputted into a CSV file within the same directory.
-Each step can be completed on its own. However, we suggest following the guidelines above to ensure the most efficient and optimized processing.
+Each step can be completed on its own. However, we suggest following the guidelines above to ensure the most efficient and optimized processing. Ouput Files need to be specified before processing.
 Designed for the Ray Truant research lab.
 '''.strip())
         infoLabel.configure(state="disabled")
@@ -57,7 +57,7 @@ Designed for the Ray Truant research lab.
         
 # Choosing Directory Setup #
         self.dirFrame = tk.Frame(self.outerFrame)
-        self.dirFrame.pack(side="top",expand=1, fill="x", pady=[0,20])
+        self.dirFrame.pack(side="top",expand=1, fill="x", pady=[0,5])
         self.dirButton = tk.Button(self.dirFrame, text="Choose Picture Directory", command=self.chooseDirectory)
         self.dirButton.pack(side="top",expand=1, fill="none")
         # Make a label to display directory location for user
@@ -71,7 +71,7 @@ Designed for the Ray Truant research lab.
         
         # Convert to bit section #
         self.bitFrame = tk.Frame(self.outerFrame)
-        self.bitFrame.pack(side="top",expand=0,fill="x",ipady=30)
+        self.bitFrame.pack(side="top",expand=0,fill="x",ipady=15)
         # Creates the checkbox
         self.bitCheck = tk.IntVar()
         self.bitCheckBox = tk.Checkbutton(self.bitFrame, text="Enable", variable=self.bitCheck, command=self.bitFunction, padx=70)
@@ -101,7 +101,7 @@ Designed for the Ray Truant research lab.
         
 # Thresholding section #
         self.threshFrame = tk.Frame(self.outerFrame)
-        self.threshFrame.pack(side="top",expand=0,fill="x", ipady=30)    
+        self.threshFrame.pack(side="top",expand=0,fill="x", ipady=15)    
         # Creates the checkbox
         self.threshCheck = tk.IntVar()
         self.threshCheckBox = tk.Checkbutton(self.threshFrame, text="Enable", variable=self.threshCheck, command=self.threshFunction, padx=70)
@@ -121,7 +121,7 @@ Designed for the Ray Truant research lab.
         self.threshImage.pack(in_=self.threshImageFrame)
         self.threshImage.pack_forget()
         # Creates the text description
-        threshText = tk.Text(self.threshFrame, height=4,width=75,bd=0, bg=self.myParent.cget("bg"), wrap="word")
+        threshText = tk.Text(self.threshFrame, height=3,width=75,bd=0, bg=self.myParent.cget("bg"), wrap="word")
         threshText.insert("end","Thresholding selects portions of the image to analyse using various algorithms. Unless already thresholded, use this option to select your thresholding configuration.")
         threshText.configure(state="disabled")
         threshText.tag_configure("center",justify="center")
@@ -131,7 +131,7 @@ Designed for the Ray Truant research lab.
     
 # Texture Analysis Section #
         self.textureFrame = tk.Frame(self.outerFrame)
-        self.textureFrame.pack(side="top",expand=0,fill="x", ipady=30)    
+        self.textureFrame.pack(side="top",expand=0,fill="x", ipady=15)    
         # Creates the checkbox
         self.textureCheck = tk.IntVar()
         self.textureCheckBox = tk.Checkbutton(self.textureFrame, text="Enable", variable=self.textureCheck, command=self.textureFunction, padx=70)
@@ -151,7 +151,7 @@ Designed for the Ray Truant research lab.
         self.textureImage.pack(in_=self.textureImageFrame)
         self.textureImage.pack_forget()    
         # Creates the text description
-        textureText = tk.Text(self.textureFrame, height=4,width=75,bd=0, bg=self.myParent.cget("bg"), wrap="word")
+        textureText = tk.Text(self.textureFrame, height=2,width=75,bd=0, bg=self.myParent.cget("bg"), wrap="word")
         textureText.insert("end","This step takes the images and constructs a GLCM. From here, it calculates statistical values describing the textures within each image.")
         textureText.configure(state="disabled")
         textureText.tag_configure("center",justify="center")
@@ -160,7 +160,7 @@ Designed for the Ray Truant research lab.
     
     
 # Divider Line #
-        tk.Frame(self.outerFrame, relief="sunken", borderwidth=1, bg="black").pack(side="top", fill="x")
+        tk.Frame(self.outerFrame, relief="solid", borderwidth=2, bg="darkgrey").pack(side="top", fill="x")
     
 
 # Creates a run button #
@@ -237,34 +237,63 @@ Designed for the Ray Truant research lab.
     
     def chooseDirectory(self):
         self.config.directory = askdirectory()
-        files = os.listdir(self.config.directory)
-        self.tifFiles = []
-        regex = re.compile("\.tif|\.tiff",re.IGNORECASE)
-        for file in files:
-            if( regex.search(file) ):
-                filePath = self.config.directory + os.path.sep + file
-                self.tifFiles.append(filePath)
-        self.dirLabel.configure(text=self.config.directory + "\n" + str(len(self.tifFiles)) + " TIF file(s) found")
-        if (len(self.tifFiles) != 0):
-	    self.textureCheckBox.configure(state="normal")
-	    self.threshCheckBox.configure(state="normal")
-	    self.bitCheckBox.configure(state="normal")
-	    Config.CFGdirectory = 1
-	    Config.tifFiles = self.tifFiles
-	else:
-	    self.textureCheckBox.deselect()
-	    self.threshCheckBox.deselect()
-	    self.bitCheckBox.deselect()
-	    self.textureCheckBox.configure(state="disabled")
-	    self.threshCheckBox.configure(state="disabled")
-	    self.bitCheckBox.configure(state="disabled")
-	    self.textureButton.configure(state="disabled")
-	    self.threshButton.configure(state="disabled")
-	    self.bitImage.pack_forget()
-	    self.threshImage.pack_forget()
-	    self.textureImage.pack_forget()
-	    Config.CFGdirectory = 0
-	    self.config = Config()
+        
+        if os.path.exists(self.config.directory):                
+            files = os.listdir(self.config.directory)
+            self.tifFiles = []
+            regex = re.compile("\.tif|\.tiff",re.IGNORECASE)
+            for file in files:
+                if( regex.search(file) ):
+                    filePath = self.config.directory + os.path.sep + file
+                    self.tifFiles.append(filePath)
+            self.dirLabel.configure(text=self.config.directory + "\n" + str(len(self.tifFiles)) + " TIF file(s) found")
+            if (len(self.tifFiles) != 0):
+                self.textureCheckBox.configure(state="normal")
+                self.threshCheckBox.configure(state="normal")
+                self.bitCheckBox.configure(state="normal")
+                Config.CFGdirectory = 1
+                Config.tifFiles = self.tifFiles
+            else:
+                self.textureCheckBox.deselect()
+                self.threshCheckBox.deselect()
+                self.bitCheckBox.deselect()
+                self.textureCheckBox.configure(state="disabled")
+                self.threshCheckBox.configure(state="disabled")
+                self.bitCheckBox.configure(state="disabled")
+                self.textureButton.configure(state="disabled")
+                self.threshButton.configure(state="disabled")
+                self.bitImage.pack_forget()
+                self.threshImage.pack_forget()
+                self.textureImage.pack_forget()
+                Config.CFGdirectory = 0
+                self.bitOutputCK.deselect()
+                self.thresholdOutputCK.deselect()
+                self.textureOutputCK.deselect()
+                self.bitOutputCK.configure(state="disabled")
+                self.thresholdOutputCK.configure(state="disabled")
+                self.textureOutputCK.configure(state="disabled")                
+                self.config = Config()                
+        else:
+            self.textureCheckBox.deselect()
+            self.threshCheckBox.deselect()
+            self.bitCheckBox.deselect()
+            self.textureCheckBox.configure(state="disabled")
+            self.threshCheckBox.configure(state="disabled")
+            self.bitCheckBox.configure(state="disabled")
+            self.textureButton.configure(state="disabled")
+            self.threshButton.configure(state="disabled")
+            self.bitImage.pack_forget()
+            self.threshImage.pack_forget()
+            self.textureImage.pack_forget()
+            Config.CFGdirectory = 0
+            self.bitOutputCK.deselect()
+            self.thresholdOutputCK.deselect()
+            self.textureOutputCK.deselect()
+            self.bitOutputCK.configure(state="disabled")
+            self.thresholdOutputCK.configure(state="disabled")
+            self.textureOutputCK.configure(state="disabled")
+            self.dirLabel.configure(text="")
+            self.config = Config()
         
     def bitOutputFunction(self,event=None):        
         if(self.bitOutput.get() == 1):
@@ -309,7 +338,7 @@ Designed for the Ray Truant research lab.
       
         if (directoryChoice == 0):
             tkMessageBox.showwarning("Warning - Invalid Parameters", "No Input Image Set Detected")    
-        elif ( (Config.threshO == 1) and (Config.CFGadaptThresh == 0 and Config.CFGmanuThresh == 0) ):
+        elif ( (Config.threshO == 1 or self.threshCheck.get() == 1) and (Config.CFGadaptThresh == 0 and Config.CFGmanuThresh == 0) ):
             tkMessageBox.showwarning("Warning - Invalid Settings", "Thresholding Parameters Must Be Configured If Selected")
         elif ( (self.textureOutput.get() == 1) and (Config.CFGtextureAnalysis == 0) ):
             tkMessageBox.showwarning("Warning - Invalid Settings", "Texture Analysis Parameters Must Be Configured If Selected")
@@ -490,8 +519,7 @@ Designed for the Ray Truant research lab.
                             if not os.path.isdir(filepath):
                                 raise      
                         
-                        f = open(os.path.join(filepath, filename), "a")
-                        #f = open(filename, 'a')                                        
+                        f = open(os.path.join(filepath, filename), "a")                               
                         
                         imageName = image.replace("/","*")
                         imageName = imageName.replace("\\","*")                        

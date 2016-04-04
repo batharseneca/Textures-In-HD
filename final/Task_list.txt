@@ -1,10 +1,9 @@
 - Things To Work On:
 
 - BitFunction Processing                                    --> Nishanth
-
-- Saving Option for Intermediates GUI                       --> Bilal
-- Saving Option For Intermediates Functionality             --> Bilal
-- Profile Loading/Saving  GUI/Functionality (Pickle/Dill)   --> Everyone 
+- Saving Option for Intermediates GUI                       --> Bilal       (Completed)
+- Saving Option For Intermediates Functionality             --> Bilal       (Completed)
+- Profile Loading/Saving  GUI/Functionality (Pickle/Dill)   --> Everyone    [Issue with this is we dont output our variabeles anywhere for the user to see yet so How do they know what the profile holds if they pick one?] 
 - ProgressBar(TQDM GUI)                                     --> Nishanth                    
 
 
@@ -12,4 +11,9 @@
 TESTING ISSUES SO FAR:
 
 - http://stackoverflow.com/questions/27784528/numpy-division-with-runtimewarning-invalid-value-encountered-in-double-scalars (line 197 HARALICK!)
-
+    Need to use higher math module?
+    NOT RESOLVED
+- For Ask Directory button if you press cancel or make no selection : WindowsError: [Error 3] The system cannot find the path specified: ''
+    We have to raise an exception or something so that doesn't mess everything up
+    !RESOLVED!
+- 
