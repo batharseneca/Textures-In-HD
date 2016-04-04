@@ -355,13 +355,20 @@ Designed for the Ray Truant research lab.
                         if (Config.bitO == 1):
                             date = time.strftime("%d_%m_%Y")    
                             filepath = os.path.dirname(os.path.abspath(__file__))
-                            imageName = image                        
-                            name_Array = imageName.split("/")
-                            if (name_Array == imageName):
-                                name_Array = imageName.split("\\")
+                            
+                            imageName = image.replace("/","*")
+                            imageName = imageName.replace("\\","*")                        
+                            name_Array = imageName.split("*")
                             imageName = name_Array[-1]
-                            filepath = filepath + os.path.sep + "8BIT_Converted_Images" + os.path.sep + date + "_8BIT_" + imageName + ".tif"
-                            cv2.imwrite(filepath, img)
+                            
+                            filepath = filepath + os.path.sep + "8BIT_Converted_Images" + os.path.sep + date + "_8BIT_" 
+                            try: 
+                                os.makedirs(filepath)
+                            except OSError:
+                                if not os.path.isdir(filepath):
+                                    raise
+                            print imageName
+                            cv2.imwrite(os.path.join(filepath, imageName), img)
                     
                 # Check if Adaptive or Manual Thresholding is Selected
                 if (Config.CFGadaptThresh == 1):
@@ -382,13 +389,20 @@ Designed for the Ray Truant research lab.
                     if (Config.threshO == 1): 
                         date = time.strftime("%d_%m_%Y")
                         filepath = os.path.dirname(os.path.abspath(__file__))
-                        imageName = image                        
-                        name_Array = imageName.split("/")
-                        if (name_Array == imageName):
-                            name_Array = imageName.split("\\")
+                        
+                        imageName = image.replace("/","*")
+                        imageName = imageName.replace("\\","*")                        
+                        name_Array = imageName.split("*")
                         imageName = name_Array[-1]
-                        filepath = filepath + os.path.sep + "Thresholded_Images" + os.path.sep + date + "_Adaptive_" + str(Config.AdaptWeighting) + "_" + str(Config.AdaptiveBlockSize) + "_" + imageName + ".tif"
-                        cv2.imwrite(filepath, img)
+                       
+                        
+                        filepath = filepath + os.path.sep + "Thresholded_Images" + os.path.sep + date + "_Adaptive_" + str(Config.AdaptWeighting) + "_" + str(Config.AdaptiveBlockSize)
+                        try: 
+                            os.makedirs(filepath)
+                        except OSError:
+                            if not os.path.isdir(filepath):
+                                raise                        
+                        cv2.imwrite(os.path.join(filepath, imageName), img)
                     
                     
                 elif (Config.CFGmanuThresh == 1):
@@ -406,14 +420,20 @@ Designed for the Ray Truant research lab.
                     if (Config.threshO == 1): 
                         date = time.strftime("%d_%m_%Y")
                         filepath = os.path.dirname(os.path.abspath(__file__))
-                        imageName = image                        
-                        name_Array = imageName.split("/")
-                        if (name_Array == imageName):
-                            name_Array = imageName.split("\\")
+                        
+                        imageName = image.replace("/","*")
+                        imageName = imageName.replace("\\","*")                        
+                        name_Array = imageName.split("*")
                         imageName = name_Array[-1]
-                        filepath = filepath + os.path.sep + "Thresholded_Images" + os.path.sep + date + "_Manual_" + str(Config.ManuThresholdValue) + "_" + imageName + ".tif"
-                        cv2.imwrite(filepath, img)
-                    
+                                                
+                        filepath = filepath + os.path.sep + "Thresholded_Images" + os.path.sep + date + "_Manual_" + str(Config.ManuThresholdValue) 
+                        try: 
+                            os.makedirs(filepath)
+                        except OSError:
+                            if not os.path.isdir(filepath):
+                                raise                        
+                        cv2.imwrite(os.path.join(filepath, imageName), img)
+                                            
                     
                 # Check if Texture Analysis was selected
                 if (Config.CFGtextureAnalysis == 1):
