@@ -130,6 +130,10 @@ class Introduction(Config):
         self.loadprofilesMenu.add_radiobutton(label=nameAccepted, variable=self.existingProfiles, value=nameAccepted)         
         self.loadprofilesMenu.add_command(label = "Load Saved Profile", command = self.loadProfiles)
         
+        self.deleteprofilesMenu.delete("Delete Saved Profile")
+        self.deleteprofilesMenu.add_radiobutton(label=nameAccepted, variable=self.existingProfiles2, value=nameAccepted)         
+        self.deleteprofilesMenu.add_command(label = "Delete Saved Profile", command = self.delProfiles)
+        
         # Closes Window
         self.SaveProfileWindow.destroy()
             
@@ -277,7 +281,7 @@ class Introduction(Config):
         self.existingProfiles2 = tk.StringVar()
         for file in os.listdir(self.savedProfilefilepath):
             self.deleteprofilesMenu.add_radiobutton(label=file, variable=self.existingProfiles2, value=file)
-        self. deleteprofilesMenu.add_command(label = "Delete Saved Profile(s)", 
+        self.deleteprofilesMenu.add_command(label = "Delete Saved Profile", 
                             command = self.delProfiles)
        
         # Help Menu

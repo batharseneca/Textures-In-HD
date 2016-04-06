@@ -51,6 +51,7 @@ class TextureAnalysis():
                                     "\n 3) All enteries must be valid digits between 0-99\n 4) Do not use leading 0's e.x 09\n\n    Invalid Enteries will disable the Submit option")
         self.guideline.text.pack(side="left",fill='none',expand=False, padx=10, pady=10)
         self.guideline.text.configure(state='disabled')
+        
     def validate2(self,P):
         if(P==""):
             self.clearInput.config(state='disabled')
