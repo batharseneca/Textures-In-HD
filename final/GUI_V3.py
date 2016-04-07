@@ -670,9 +670,9 @@ Designed for the Ray Truant research lab.
                         img = cv2.imread(image,0)
                     # Checks if Mean or Gaussian selected and performs thresholding
                     if (self.config.AdaptWeighting == "mean" ):
-                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,int(self.config.AdaptiveBlockSize),5)
+                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_TOZERO,int(self.config.AdaptiveBlockSize),5)
                     else:
-                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,int(self.config.AdaptiveBlockSize),5)            
+                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_TOZERO,int(self.config.AdaptiveBlockSize),5)            
                     if (self.config.threshO == 1): 
                         date = time.strftime("%d_%m_%Y_")
                         filepath = os.path.dirname(os.path.abspath(__file__))                        
@@ -700,7 +700,7 @@ Designed for the Ray Truant research lab.
                     if (self.config.CFGbitConversion == 0):
                         img = cv2.imread(image,0)
                     # Performs thresholding
-                    ret,img = cv2.threshold(img,float(self.config.ManuThresholdValue),255,cv2.THRESH_BINARY)             
+                    ret,img = cv2.threshold(img,float(self.config.ManuThresholdValue),255,cv2.THRESH_TOZERO)             
                     if (self.config.threshO == 1): 
                         date = time.strftime("%d_%m_%Y_")
                         filepath = os.path.dirname(os.path.abspath(__file__))                        
