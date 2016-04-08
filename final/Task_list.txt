@@ -12,7 +12,7 @@ TESTING ISSUES SO FAR:
 
 - http://stackoverflow.com/questions/27784528/numpy-division-with-runtimewarning-invalid-value-encountered-in-double-scalars (line 197 HARALICK!)
     Need to use higher math module?
-    NOT RESOLVED
+    NOT RESOLVED --- I just changed it so that if the denominator is 0, return 0 for that function. So kinda solved, but not perfect haha
 - For Ask Directory button if you press cancel or make no selection : WindowsError: [Error 3] The system cannot find the path specified: ''
     We have to raise an exception or something so that doesn't mess everything up
     !RESOLVED!
