@@ -20,7 +20,7 @@ import re
 from tqdm import tqdm
 import time
 import dill
-
+import threading
 
 ## Import our classes!!
 from config_V3 import Config
@@ -427,7 +427,7 @@ Designed for the Ray Truant research lab.
         self.runFrame = tk.Frame(self.outerFrame)
         self.runFrame.pack(fill="x", pady=20)        
                
-        self.runButton = tk.Button(self.runFrame, text="Run!", width=20, command=self.runConfigure)
+        self.runButton = tk.Button(self.runFrame, text="Run!", width=20, command=self.startRunningThread)
         self.runButton.pack(side="right", padx=20, expand=1, anchor="e")
         
         self.savefileLabel = tk.Label(self.runFrame, text="Please Select the Analysis Steps From Which You Wish To Retain Data Files: ")
@@ -582,7 +582,13 @@ Designed for the Ray Truant research lab.
                 
 # Method to run Selected Settings from Main Window #
    
-    def runConfigure(self):
+    def checkRunningThread(self):
+        if(running_thread.is_alive()):
+            root.after(20,self.checkRunningThread)
+        else:
+            self.runWindow.progress.stop
+
+    def startRunningThread(self):
         configArray = self.config.returnMethod()
         directoryChoice, bitChoice, adaptiveThresh, manuThresh, textureAnalysis = configArray
         print "Directory Select? ", directoryChoice, "\n", "bitChoice Select? ", bitChoice, "\n", "manual Thresholding Select? ", manuThresh, "\n", "adaptive Thresholding Select? ", adaptiveThresh, "\n", "Texture Analysis Select? ", textureAnalysis, "\n"
@@ -590,6 +596,7 @@ Designed for the Ray Truant research lab.
         print "bitO: ", self.config.bitO
         print "threshO: ", self.config.threshO
         checkArray = ['Directory', 'Bit Conversion', 'Adaptive Thresholding', 'Manual Thresholding', 'Texture Analysis']
+        global stepsArray
         stepsArray = []
         for index in range (1,5):
             if configArray[index] == 1:
@@ -613,182 +620,199 @@ Designed for the Ray Truant research lab.
             self.runWindow.wm_title("Data Analysis in Progress")        
             self.outerFrame4 = tk.Frame(self.runWindow, borderwidth=2, relief="ridge", width=400, height=400)
             self.outerFrame4.pack(padx=20,pady=20)
-            imageCount = 1
-            labelImageProcess = tk.Label(self.outerFrame4, text="Processing Image: " + str(imageCount) + " Of " + str(len(self.tifFiles)) + " Images" )
-            labelImageProcess.grid(row=0, column =0, padx=20, pady=10, sticky="wens")
-            label = {}
+            self.imageCount = 1
+            self.labelImageProcess = tk.Label(self.outerFrame4, text="Processing Image: " + str(self.imageCount) + " Of " + str(len(self.tifFiles)) + " Images" )
+            self.labelImageProcess.grid(row=0, column =0, padx=20, pady=10, sticky="wens")
+            self.label = {}
+
+            self.runWindow.progress = ttk.Progressbar(self.runWindow, orient=HORIZONTAL,length=400, maximum=len(self.tifFiles),value=1, mode='determinate')
+            self.runWindow.progress.pack(padx=20,pady=20)
+            self.runWindow.progress.start
+
             h=1
             for step in stepsArray:
                 lb = tk.Label(self.outerFrame4, text="Step " + str((stepsArray.index(step) + 1)) + ": " + step)
                 lb.grid(row=h, column =0, padx=10, pady=5, sticky="w")
-                label[step] = lb           
+                self.label[step] = lb           
                 lb2 = tk.Label(self.outerFrame4, text="Pending")
                 lb2.grid(row=h, column=1, padx=10, pady=5, sticky="w")
-                label[step + "a"] = lb2     
+                self.label[step + "a"] = lb2     
                 h +=1
-            label[stepsArray[0] + "a"].config(text='In Progress')
+            self.label[stepsArray[0] + "a"].config(text='In Progress')
+
+        global running_thread
+        running_thread = threading.Thread(target=self.runConfigure)
+        running_thread.daemon = True
+        running_thread.start()
+        root.after(20,self.checkRunningThread)
+
+
+    def runConfigure(self):
             
 # Main Processing Code # - ADDITIONAL NOTE : IF at any time something is the only step or last step its easy to check by checking if stepsArray[-1] = w.e you are doing!!!!!
 # Will now Create a Results Folder --> Threshold/8BIT_Converted_Images/Texture Analysis Folder --> DATE/DATASET/TYPEFOLDER --> FILES            
-            proccessing = ProcessingFunctions()
-            for image in tqdm(self.tifFiles):
-                # Updates Image Counter
-                labelImageProcess.config(text="Processing Image: " + str(imageCount) + " Of " + str(len(self.tifFiles)) + " Images")
-                # First Checks for BitCoversion Selection
-                if (self.config.CFGbitConversion == 1):
-                    img = cv2.imread(image,0)
+        proccessing = ProcessingFunctions()
+        for image in tqdm(self.tifFiles):
+            # Updates Image Counter
+            self.labelImageProcess.config(text="Processing Image: " + str(self.imageCount) + " Of " + str(len(self.tifFiles)) + " Images")
+            # First Checks for BitCoversion Selection
+            if (self.config.CFGbitConversion == 1):
+                img = cv2.imread(image,0)
 
 
-                    # If Image is not already 8 bit will convert
-                    try:
-                        isEightBit = proccessing.check8bitImage(img)
-                    except AttributeError:
-                        print image.split(os.path.sep)[-1].strip() + " is not a valid image." 
-                        continue
-                    if isEightBit == False:
-                        img = proccessing.convertTo8bit(img)                                            
-                        if (self.config.bitO == 1):
-                            date = time.strftime("%d_%m_%Y")    
-                            filepath = os.path.dirname(os.path.abspath(__file__))                            
-                            outputPath = self.config.directory.replace("/","*")
-                            outputPath = outputPath.replace("\\","*")
-                            outputArray = outputPath.split("*")
-                            outputPath = outputArray[-1]                            
-                            imageName = image.replace("/","*")
-                            imageName = imageName.replace("\\","*")                        
-                            name_Array = imageName.split("*")
-                            imageName = name_Array[-1]                            
-                            filepath = filepath + os.path.sep + "Results" + os.path.sep + "8BIT_Converted_Images" + os.path.sep + date + outputPath + "_8BIT_" 
-                            try: 
-                                os.makedirs(filepath)
-                            except OSError:
-                                if not os.path.isdir(filepath):
-                                    raise
-                            print imageName
-                            cv2.imwrite(os.path.join(filepath, imageName), img)                    
-                # Check if Adaptive or Manual Thresholding is Selected
-                if (self.config.CFGadaptThresh == 1):
-                    # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
-                    if (stepsArray[0] == "Bit Conversion"):
-                        label[stepsArray[0] + "a"].config(text='Completed')
-                        label[stepsArray[1] + "a"].config(text='In Progress')
-                    # If bitcoversion not selected img is not yet open! 
-                    if (self.config.CFGbitConversion == 0):
-                        img = cv2.imread(image,0)
-                    # Checks if Mean or Gaussian selected and performs thresholding
-                    print img.shape
-                    if (self.config.AdaptWeighting == "mean" ):
-                        img2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,int(self.config.AdaptiveBlockSize),5)
-                        img = img * (img2 != 0)
-                        img2 = None
-                    else:
-                        img2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,int(self.config.AdaptiveBlockSize),5)            
-                        img =  img * (img2 != 0)
-                        img2 = None
-                    if (self.config.threshO == 1): 
-                        date = time.strftime("%d_%m_%Y_")
-                        filepath = os.path.dirname(os.path.abspath(__file__))                        
+                # If Image is not already 8 bit will convert
+                try:
+                    isEightBit = proccessing.check8bitImage(img)
+                except AttributeError:
+                    print image.split(os.path.sep)[-1].strip() + " is not a valid image." 
+                    continue
+                if isEightBit == False:
+                    img = proccessing.convertTo8bit(img)                                            
+                    if (self.config.bitO == 1):
+                        date = time.strftime("%d_%m_%Y")    
+                        filepath = os.path.dirname(os.path.abspath(__file__))                            
                         outputPath = self.config.directory.replace("/","*")
                         outputPath = outputPath.replace("\\","*")
                         outputArray = outputPath.split("*")
-                        outputPath = outputArray[-1]                        
+                        outputPath = outputArray[-1]                            
                         imageName = image.replace("/","*")
                         imageName = imageName.replace("\\","*")                        
                         name_Array = imageName.split("*")
-                        imageName = name_Array[-1]                  
-                        filepath = filepath + os.path.sep + "Results" + os.path.sep + "Thresholded_Images" + os.path.sep + date + outputPath + "_Adaptive_" + str(self.config.AdaptWeighting) + "_" + str(self.config.AdaptiveBlockSize)
+                        imageName = name_Array[-1]                            
+                        filepath = filepath + os.path.sep + "Results" + os.path.sep + "8BIT_Converted_Images" + os.path.sep + date + outputPath + "_8BIT_" 
                         try: 
                             os.makedirs(filepath)
                         except OSError:
                             if not os.path.isdir(filepath):
-                                raise                        
+                                raise
+                        print imageName
                         cv2.imwrite(os.path.join(filepath, imageName), img)                    
-                elif (self.config.CFGmanuThresh == 1):
-                    # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
-                    if (stepsArray[0] == "Bit Conversion"):
-                        label[stepsArray[0] + "a"].config(text='Completed')
-                        label[stepsArray[1] + "a"].config(text='In Progress')
-                    # If bitcoversion not selected img is not yet open!   
-                    if (self.config.CFGbitConversion == 0):
-                        img = cv2.imread(image,0)
-                    # Performs thresholding
-                    ret,img = cv2.threshold(img,float(self.config.ManuThresholdValue),255,cv2.THRESH_TOZERO)             
-                    if (self.config.threshO == 1): 
-                        date = time.strftime("%d_%m_%Y_")
-                        filepath = os.path.dirname(os.path.abspath(__file__))                        
-                        outputPath = self.config.directory.replace("/","*")
-                        outputPath = outputPath.replace("\\","*")
-                        outputArray = outputPath.split("*")
-                        outputPath = outputArray[-1]                        
-                        imageName = image.replace("/","*")
-                        imageName = imageName.replace("\\","*")                        
-                        name_Array = imageName.split("*")
-                        imageName = name_Array[-1]                                                
-                        filepath = filepath + os.path.sep + "Results" + os.path.sep + "Thresholded_Images" + os.path.sep + date + outputPath + "_Manual_" + str(self.config.ManuThresholdValue) 
-                        try: 
-                            os.makedirs(filepath)
-                        except OSError:
-                            if not os.path.isdir(filepath):
-                                raise                        
-                        cv2.imwrite(os.path.join(filepath, imageName), img)         
-                # Check if Texture Analysis was selected
-                if (self.config.CFGtextureAnalysis == 1):
-                    # Updates Labels
-                    if (stepsArray[0] == "Manual Thresholding" or stepsArray[0] == "Adaptive Thresholding"):
-                        label[stepsArray[0] + "a"].config(text='Completed')
-                        label[stepsArray[1] + "a"].config(text='In Progress')
-                    if (stepsArray[0] == "Bit Conversion"):                        
-                        if (stepsArray[1] == "Manual Thresholding" or stepsArray[1] == "Adaptive Thresholding"):
-                            label[stepsArray[1] + "a"].config(text='Completed')
-                            label[stepsArray[2] + "a"].config(text='In Progress')
-                        else:
-                            label[stepsArray[0] + "a"].config(text='Completed')
-                            label[stepsArray[1] + "a"].config(text='In Progress')                 
-                    # If nothing was done previously image is not yet open!   
-                    if (self.config.CFGbitConversion == 0 and self.config.CFGadaptThresh == 0 and self.config.CFGmanuThresh == 0):
-                        img = cv2.imread(image,0)
-                    # Will save values into a row in a file named by filepath of dataset for each neighborhood size 
-                    # ###### Would defintely be faster if all calculated and stored then file opened only once file IO is a heavy strain! ###### #
-                    for nhood in self.config.TextureNeighborhoods:
-                        coMAT = proccessing.GLCM(img,int(nhood))                                               
-                        imageTextureFeature = proccessing.haralickALL(coMAT)                        
-                        filepath = os.path.dirname(os.path.abspath(__file__))                                                                  
-                        outputPath = self.config.directory.replace("/","*")
-                        outputPath = outputPath.replace("\\","*")
-                        outputArray = outputPath.split("*")
-                        outputPath = outputArray[-1]                        
-                        filename = outputPath                        
-                        date = time.strftime("%d_%m_%Y")
-                        filename = date + "_" + filename + ".csv" 
-                        filepath = filepath + os.path.sep + "Results" + os.path.sep + "Texture_Analysis" + os.path.sep + date  
-                        try: 
-                            os.makedirs(filepath)
-                        except OSError:
-                            if not os.path.isdir(filepath):
-                                raise                              
-                        f = open(os.path.join(filepath, filename), "a")                                                       
-                        imageName = image.replace("/","*")
-                        imageName = imageName.replace("\\","*")                        
-                        name_Array = imageName.split("*")
-                        imageName = name_Array[-1]                  
-                        imageName = imageName + "_nhood_" + nhood                        
-                        for features in imageTextureFeature:
-                            modFeature = str(features)
-                            imageTextureFeature[imageTextureFeature.index(features)] = modFeature                            
-                        imageTextureFeature = [imageName] + imageTextureFeature 
-                        f.write(",".join(imageTextureFeature) + "\n")
-                        f.close                        
-                # Resets Labels and updates Image Counter
-                for counter in range (0,len(stepsArray)):
-                    label[stepsArray[counter] + "a"].config(text='Pending')
-                label[stepsArray[0] + "a"].config(text='In Progress')
-                imageCount +=1
-            #Testing in STDOUT
-            print "TASK IS DONE!"
+            # Check if Adaptive or Manual Thresholding is Selected
+            if (self.config.CFGadaptThresh == 1):
+                # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
+                if (stepsArray[0] == "Bit Conversion"):
+                    self.label[stepsArray[0] + "a"].config(text='Completed')
+                    self.label[stepsArray[1] + "a"].config(text='In Progress')
+                # If bitcoversion not selected img is not yet open! 
+                if (self.config.CFGbitConversion == 0):
+                    img = cv2.imread(image,0)
+                # Checks if Mean or Gaussian selected and performs thresholding
+                print img.shape
+                if (self.config.AdaptWeighting == "mean" ):
+                    img2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,int(self.config.AdaptiveBlockSize),5)
+                    img = img * (img2 != 0)
+                    img2 = None
+                else:
+                    img2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,int(self.config.AdaptiveBlockSize),5)            
+                    img =  img * (img2 != 0)
+                    img2 = None
+                if (self.config.threshO == 1): 
+                    date = time.strftime("%d_%m_%Y_")
+                    filepath = os.path.dirname(os.path.abspath(__file__))                        
+                    outputPath = self.config.directory.replace("/","*")
+                    outputPath = outputPath.replace("\\","*")
+                    outputArray = outputPath.split("*")
+                    outputPath = outputArray[-1]                        
+                    imageName = image.replace("/","*")
+                    imageName = imageName.replace("\\","*")                        
+                    name_Array = imageName.split("*")
+                    imageName = name_Array[-1]                  
+                    filepath = filepath + os.path.sep + "Results" + os.path.sep + "Thresholded_Images" + os.path.sep + date + outputPath + "_Adaptive_" + str(self.config.AdaptWeighting) + "_" + str(self.config.AdaptiveBlockSize)
+                    try: 
+                        os.makedirs(filepath)
+                    except OSError:
+                        if not os.path.isdir(filepath):
+                            raise                        
+                    cv2.imwrite(os.path.join(filepath, imageName), img)                    
+            elif (self.config.CFGmanuThresh == 1):
+                # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
+                if (stepsArray[0] == "Bit Conversion"):
+                    self.label[stepsArray[0] + "a"].config(text='Completed')
+                    self.label[stepsArray[1] + "a"].config(text='In Progress')
+                # If bitcoversion not selected img is not yet open!   
+                if (self.config.CFGbitConversion == 0):
+                    img = cv2.imread(image,0)
+                # Performs thresholding
+                ret,img = cv2.threshold(img,float(self.config.ManuThresholdValue),255,cv2.THRESH_TOZERO)             
+                if (self.config.threshO == 1): 
+                    date = time.strftime("%d_%m_%Y_")
+                    filepath = os.path.dirname(os.path.abspath(__file__))                        
+                    outputPath = self.config.directory.replace("/","*")
+                    outputPath = outputPath.replace("\\","*")
+                    outputArray = outputPath.split("*")
+                    outputPath = outputArray[-1]                        
+                    imageName = image.replace("/","*")
+                    imageName = imageName.replace("\\","*")                        
+                    name_Array = imageName.split("*")
+                    imageName = name_Array[-1]                                                
+                    filepath = filepath + os.path.sep + "Results" + os.path.sep + "Thresholded_Images" + os.path.sep + date + outputPath + "_Manual_" + str(self.config.ManuThresholdValue) 
+                    try: 
+                        os.makedirs(filepath)
+                    except OSError:
+                        if not os.path.isdir(filepath):
+                            raise                        
+                    cv2.imwrite(os.path.join(filepath, imageName), img)         
+            # Check if Texture Analysis was selected
+            if (self.config.CFGtextureAnalysis == 1):
+                # Updates Labels
+                if (stepsArray[0] == "Manual Thresholding" or stepsArray[0] == "Adaptive Thresholding"):
+                    self.label[stepsArray[0] + "a"].config(text='Completed')
+                    self.label[stepsArray[1] + "a"].config(text='In Progress')
+                if (stepsArray[0] == "Bit Conversion"):                        
+                    if (stepsArray[1] == "Manual Thresholding" or stepsArray[1] == "Adaptive Thresholding"):
+                        self.label[stepsArray[1] + "a"].config(text='Completed')
+                        self.label[stepsArray[2] + "a"].config(text='In Progress')
+                    else:
+                        self.label[stepsArray[0] + "a"].config(text='Completed')
+                        self.label[stepsArray[1] + "a"].config(text='In Progress')                 
+                # If nothing was done previously image is not yet open!   
+                if (self.config.CFGbitConversion == 0 and self.config.CFGadaptThresh == 0 and self.config.CFGmanuThresh == 0):
+                    img = cv2.imread(image,0)
+                # Will save values into a row in a file named by filepath of dataset for each neighborhood size 
+                # ###### Would defintely be faster if all calculated and stored then file opened only once file IO is a heavy strain! ###### #
+                for nhood in self.config.TextureNeighborhoods:
+                    coMAT = proccessing.GLCM(img,int(nhood))                                               
+                    imageTextureFeature = proccessing.haralickALL(coMAT)                        
+                    filepath = os.path.dirname(os.path.abspath(__file__))                                                                  
+                    outputPath = self.config.directory.replace("/","*")
+                    outputPath = outputPath.replace("\\","*")
+                    outputArray = outputPath.split("*")
+                    outputPath = outputArray[-1]                        
+                    filename = outputPath                        
+                    date = time.strftime("%d_%m_%Y")
+                    filename = date + "_" + filename + ".csv" 
+                    filepath = filepath + os.path.sep + "Results" + os.path.sep + "Texture_Analysis" + os.path.sep + date  
+                    try: 
+                        os.makedirs(filepath)
+                    except OSError:
+                        if not os.path.isdir(filepath):
+                            raise                              
+                    f = open(os.path.join(filepath, filename), "a")                                                       
+                    imageName = image.replace("/","*")
+                    imageName = imageName.replace("\\","*")                        
+                    name_Array = imageName.split("*")
+                    imageName = name_Array[-1]                  
+                    imageName = imageName + "_nhood_" + nhood                        
+                    for features in imageTextureFeature:
+                        modFeature = str(features)
+                        imageTextureFeature[imageTextureFeature.index(features)] = modFeature                            
+                    imageTextureFeature = [imageName] + imageTextureFeature 
+                    f.write(",".join(imageTextureFeature) + "\n")
+                    f.close
+
+            self.runWindow.progress.step
+            # Resets Labels and updates Image Counter
             for counter in range (0,len(stepsArray)):
-                label[stepsArray[counter] + "a"].config(text='Completed')
-            self.myParent.deiconify()
-            self.runWindow.destroy()
+                self.label[stepsArray[counter] + "a"].config(text='Pending')
+            self.label[stepsArray[0] + "a"].config(text='In Progress')
+            self.imageCount +=1
+        self.runWindow.progress.stop
+        #Testing in STDOUT
+        print "TASK IS DONE!"
+        for counter in range (0,len(stepsArray)):
+            self.label[stepsArray[counter] + "a"].config(text='Completed')
+        self.myParent.deiconify()
+        self.runWindow.destroy()
 
  
  
