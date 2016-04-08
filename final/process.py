@@ -191,7 +191,10 @@ class ProcessingFunctions():
         
         xStdVal = self.xstdev(CoMat)
         yStdVal = self.ystdev(CoMat)
-        
+    
+        if(xStdVal * yStdVal == 0):
+            return 0
+
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
                 val += ((i*j) * CoMat[i][j] - (xmeanVal-ymeanVal))/(xStdVal*yStdVal)
