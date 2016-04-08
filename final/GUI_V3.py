@@ -637,8 +637,15 @@ Designed for the Ray Truant research lab.
                 # First Checks for BitCoversion Selection
                 if (self.config.CFGbitConversion == 1):
                     img = cv2.imread(image,0)
+
+
                     # If Image is not already 8 bit will convert
-                    if proccessing.check8bitImage(img) != "False":
+                    try:
+                        isEightBit = proccessing.check8bitImage(img)
+                    except AttributeError:
+                        print image.split(os.path.sep)[-1].strip() + " is not a valid image." 
+                        continue
+                    if isEightBit == False:
                         img = proccessing.convertTo8bit(img)                                            
                         if (self.config.bitO == 1):
                             date = time.strftime("%d_%m_%Y")    
@@ -669,10 +676,15 @@ Designed for the Ray Truant research lab.
                     if (self.config.CFGbitConversion == 0):
                         img = cv2.imread(image,0)
                     # Checks if Mean or Gaussian selected and performs thresholding
+                    print img.shape
                     if (self.config.AdaptWeighting == "mean" ):
-                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_TOZERO,int(self.config.AdaptiveBlockSize),5)
+                        img2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,int(self.config.AdaptiveBlockSize),5)
+                        img = img * (img2 != 0)
+                        img2 = None
                     else:
-                        img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_TOZERO,int(self.config.AdaptiveBlockSize),5)            
+                        img2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,int(self.config.AdaptiveBlockSize),5)            
+                        img =  img * (img2 != 0)
+                        img2 = None
                     if (self.config.threshO == 1): 
                         date = time.strftime("%d_%m_%Y_")
                         filepath = os.path.dirname(os.path.abspath(__file__))                        

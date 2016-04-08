@@ -1,6 +1,6 @@
 - Things To Work On:
 
-- BitFunction Processing                                    --> Nishanth
+- BitFunction Processing                                    --> Nishanth    (Completed)
 - Saving Option for Intermediates GUI                       --> Bilal       (Completed)
 - Saving Option For Intermediates Functionality             --> Bilal       (Completed)
 - Profile Loading/Saving  GUI/Functionality (Pickle/Dill)   --> Everyone    [Issue with this is we dont output our variabeles anywhere for the user to see yet so How do they know what the profile holds if they pick one?] 
@@ -17,4 +17,4 @@ TESTING ISSUES SO FAR:
     We have to raise an exception or something so that doesn't mess everything up
     !RESOLVED!
 - Clicking X on main window by accident would cause loss of current session / no warnings currently --> Overrid the default behavior !RESOLVED!
-- 
+- Attribute error when loading a saved profile and running without selecting a directory.
