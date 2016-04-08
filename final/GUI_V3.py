@@ -35,6 +35,8 @@ class Introduction(Config):
         self.myParent = parent
         self.makeTemplate()
         self.config = Config()
+        self.progCount = IntVar()
+        
       
     def displaySettings(self):
         # DONE for now by just using 1 string, however if we used multiple labels manipulating colors/fonts and everything to make it more legible would be easy!
@@ -138,13 +140,13 @@ class Introduction(Config):
         self.SaveProfileWindow.destroy()
             
     def loadProfiles(self):
-        
+       # if os.path.exists:
         # Loads Class Instance of Config from User Selected Profile
         with open(self.savedProfilefilepath + os.path.sep + str(self.existingProfiles.get()), 'rb') as f:
             self.config = dill.load(f)
         
         # Resets All labels/buttons based on Settings
-        self.dirLabel.config(text="")
+        self.dirLabel.config(text="Please Select ImageSet For Loaded Settings")
          
         if (self.config.CFGdirectory == 0):
             self.textureButton.configure(state="disabled")
@@ -210,7 +212,7 @@ class Introduction(Config):
             self.textureImage.pack_forget()
             self.textureOutputCK.deselect()
             
-            
+        self.config.CFGdirectory = 0    
     
     def delProfiles(self):
     
@@ -227,8 +229,8 @@ class Introduction(Config):
         
     def mExit(self):
         # Overrides default exit prompt
-        mExit = messagebox.askokcancel(title="Quit", message="     Are You Sure You Want To Close and Exit? \nAll Settings Not Saved Into A Profile Will be Lost")
-        if mExit > 0:
+        mExitStatus = messagebox.askokcancel(title="Quit", message="Are You Sure You Want To Close and Exit? \nAll Unsaved Data Will Be Lost")
+        if mExitStatus > 0:
             self.myParent.destroy()
             return          
 
@@ -587,6 +589,13 @@ Designed for the Ray Truant research lab.
             root.after(20,self.checkRunningThread)
         else:
             self.runWindow.progress.stop
+            #Testing in STDOUT
+            print "TASK IS DONE!"
+            for counter in range (0,len(stepsArray)):
+                self.label[stepsArray[counter] + "a"].config(text='Completed')
+            self.myParent.deiconify()
+            self.runWindow.destroy()
+            
 
     def startRunningThread(self):
         configArray = self.config.returnMethod()
@@ -603,7 +612,7 @@ Designed for the Ray Truant research lab.
                 stepsArray.append(checkArray[index]) 
         numofSteps = len(stepsArray)
       
-        if (directoryChoice == 0):
+        if (self.config.CFGdirectory == 0):
             tkMessageBox.showwarning("Warning - Invalid Parameters", "No Input Image Set Detected")    
         elif ( (self.config.threshO == 1 or self.threshCheck.get() == 1) and (self.config.CFGadaptThresh == 0 and self.config.CFGmanuThresh == 0) ):
             tkMessageBox.showwarning("Warning - Invalid Settings", "Thresholding Parameters Must Be Configured If Selected")
@@ -621,11 +630,13 @@ Designed for the Ray Truant research lab.
             self.outerFrame4 = tk.Frame(self.runWindow, borderwidth=2, relief="ridge", width=400, height=400)
             self.outerFrame4.pack(padx=20,pady=20)
             self.imageCount = 1
-            self.labelImageProcess = tk.Label(self.outerFrame4, text="Processing Image: " + str(self.imageCount) + " Of " + str(len(self.tifFiles)) + " Images" )
+            self.labelImageProcess = tk.Label(self.outerFrame4, text="Processing Image: " + str(self.imageCount) + " Of " + str(len(self.config.tifFiles)) + " Images" )
             self.labelImageProcess.grid(row=0, column =0, padx=20, pady=10, sticky="wens")
             self.label = {}
-
-            self.runWindow.progress = ttk.Progressbar(self.runWindow, orient=HORIZONTAL,length=400, maximum=len(self.tifFiles),value=1, mode='determinate')
+            # Overriding User Clicking X to close
+            self.runWindow.protocol('WM_DELETE_WINDOW', self.mExit)
+            
+            self.runWindow.progress = ttk.Progressbar(self.runWindow, orient=HORIZONTAL,length=400, maximum=len(self.config.tifFiles), variable=self.progCount, mode='determinate')
             self.runWindow.progress.pack(padx=20,pady=20)
             self.runWindow.progress.start
 
@@ -640,11 +651,13 @@ Designed for the Ray Truant research lab.
                 h +=1
             self.label[stepsArray[0] + "a"].config(text='In Progress')
 
-        global running_thread
-        running_thread = threading.Thread(target=self.runConfigure)
-        running_thread.daemon = True
-        running_thread.start()
-        root.after(20,self.checkRunningThread)
+            global running_thread
+            running_thread = threading.Thread(target=self.runConfigure)
+            running_thread.daemon = True
+            running_thread.start()
+            root.after(20,self.checkRunningThread)
+            
+            
 
 
     def runConfigure(self):
@@ -653,6 +666,10 @@ Designed for the Ray Truant research lab.
 # Will now Create a Results Folder --> Threshold/8BIT_Converted_Images/Texture Analysis Folder --> DATE/DATASET/TYPEFOLDER --> FILES            
         proccessing = ProcessingFunctions()
         for image in tqdm(self.tifFiles):
+            
+            self.progCount.set(self.tifFiles.index(image))
+            
+            #print self.progCount.get()
             # Updates Image Counter
             self.labelImageProcess.config(text="Processing Image: " + str(self.imageCount) + " Of " + str(len(self.tifFiles)) + " Images")
             # First Checks for BitCoversion Selection
@@ -806,19 +823,18 @@ Designed for the Ray Truant research lab.
                 self.label[stepsArray[counter] + "a"].config(text='Pending')
             self.label[stepsArray[0] + "a"].config(text='In Progress')
             self.imageCount +=1
-        self.runWindow.progress.stop
-        #Testing in STDOUT
-        print "TASK IS DONE!"
-        for counter in range (0,len(stepsArray)):
-            self.label[stepsArray[counter] + "a"].config(text='Completed')
-        self.myParent.deiconify()
-        self.runWindow.destroy()
+        #self.runWindow.progress.stop
+        
 
  
  
  
  
-root = tk.Tk()
-app = Introduction(root)
-app.myParent.title("Textures in HD")
-root.mainloop()        
+try:
+    root = tk.Tk()
+    app = Introduction(root)
+    app.myParent.title("Textures in HD")
+    root.mainloop()        
+except (Exception, KeyboardInterrupt, IOError) as e:
+    messagebox.showerror("Error", e.__doc__ + "\n" + e.message + "\nProgram Will Be Closed")
+    root.destroy()
