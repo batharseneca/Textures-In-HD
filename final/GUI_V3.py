@@ -36,6 +36,7 @@ class Introduction(Config):
         self.makeTemplate()
         self.config = Config()
         self.progCount = IntVar()
+        self.timeset = []
         
       
     def displaySettings(self):
@@ -140,89 +141,93 @@ class Introduction(Config):
         self.SaveProfileWindow.destroy()
             
     def loadProfiles(self):
-       # if os.path.exists:
-        # Loads Class Instance of Config from User Selected Profile
-        with open(self.savedProfilefilepath + os.path.sep + str(self.existingProfiles.get()), 'rb') as f:
-            self.config = dill.load(f)
         
-        # Resets All labels/buttons based on Settings
-        self.dirLabel.config(text="Please Select ImageSet For Loaded Settings")
-         
-        if (self.config.CFGdirectory == 0):
-            self.textureButton.configure(state="disabled")
-            self.threshButton.configure(state="disabled")
+        
+        if (str(self.existingProfiles.get()) != ""):
             
-            self.bitCheckBox.configure(state="normal")
-            self.bitOutputCK.configure(state="normal")
-            self.bitOutputCK.deselect()            
-            self.bitCheckBox.deselect()
-            self.bitCheckBox.configure(state="disabled")
-            self.bitOutputCK.configure(state="disabled")
+            # Loads Class Instance of Config from User Selected Profile
+            with open(self.savedProfilefilepath + os.path.sep + str(self.existingProfiles.get()), 'rb') as f:
+                self.config = dill.load(f)
             
-            self.thresholdOutputCK.configure(state="normal")
-            self.textureCheckBox.configure(state="normal")            
-            self.thresholdOutputCK.deselect()
-            self.threshCheckBox.deselect()
-            self.threshCheckBox.configure(state="disabled")
-            self.thresholdOutputCK.configure(state="disabled")                          
-            
-            self.textureCheckBox.configure(state="normal")
-            self.textureCheckBox.deselect()
-            self.textureCheckBox.configure(state="disabled")            
-        else:
-            self.bitCheckBox.configure(state="normal")
-            self.bitOutputCK.configure(state="normal")
-            self.textureButton.configure(state="normal")
-            self.threshButton.configure(state="normal")
-            self.threshCheckBox.configure(state="normal")
-            self.thresholdOutputCK.configure(state="normal")
-            self.textureCheckBox.configure(state="normal")
-            
-        if (self.config.CFGbitConversion == 1):           
-            self.bitCheckBox.select()
-            self.bitImage.pack(in_=self.bitImageFrame)            
-            if (self.config.bitO == 1):
-                self.bitOutputCK.select()
-            else:
-                self.bitOutputCK.deselect()
-        else:
-            self.bitCheckBox.deselect()
-            self.bitImage.pack_forget()
-            
-        if (self.config.CFGadaptThresh == 1 or self.config.CFGmanuThresh == 1):
-            self.threshCheckBox.select()
-            self.threshImage.pack(in_=self.threshImageFrame)
-            if (self.config.threshO == 1):
-                self.thresholdOutputCK.select()
-            else:
+            # Resets All labels/buttons based on Settings
+            self.dirLabel.config(text="Please Select ImageSet For Loaded Settings")
+             
+            if (self.config.CFGdirectory == 0):
+                self.textureButton.configure(state="disabled")
+                self.threshButton.configure(state="disabled")
+                
+                self.bitCheckBox.configure(state="normal")
+                self.bitOutputCK.configure(state="normal")
+                self.bitOutputCK.deselect()            
+                self.bitCheckBox.deselect()
+                self.bitCheckBox.configure(state="disabled")
+                self.bitOutputCK.configure(state="disabled")
+                
+                self.thresholdOutputCK.configure(state="normal")
+                self.textureCheckBox.configure(state="normal")            
                 self.thresholdOutputCK.deselect()
-        else:
-            self.threshCheckBox.deselect()
-            self.threshImage.pack_forget()
-            
-        if (self.config.CFGtextureAnalysis == 1):
-            self.textureCheckBox.select()
-            self.textureImage.pack(in_=self.textureImageFrame)
-            self.textureOutputCK.configure(state="normal")
-            self.textureOutputCK.select()
-            self.textureOutputCK.configure(state="disabled")                        
-        else:
-            self.textureCheckBox.deselect()
-            self.textureCheckBox.configure(state="disabled")
-            self.textureImage.pack_forget()
-            self.textureOutputCK.deselect()
-            
-        self.config.CFGdirectory = 0    
+                self.threshCheckBox.deselect()
+                self.threshCheckBox.configure(state="disabled")
+                self.thresholdOutputCK.configure(state="disabled")                          
+                
+                self.textureCheckBox.configure(state="normal")
+                self.textureCheckBox.deselect()
+                self.textureCheckBox.configure(state="disabled")            
+            else:
+                self.bitCheckBox.configure(state="normal")
+                self.bitOutputCK.configure(state="normal")
+                self.textureButton.configure(state="normal")
+                self.threshButton.configure(state="normal")
+                self.threshCheckBox.configure(state="normal")
+                self.thresholdOutputCK.configure(state="normal")
+                self.textureCheckBox.configure(state="normal")
+                
+            if (self.config.CFGbitConversion == 1):           
+                self.bitCheckBox.select()
+                self.bitImage.pack(in_=self.bitImageFrame)            
+                if (self.config.bitO == 1):
+                    self.bitOutputCK.select()
+                else:
+                    self.bitOutputCK.deselect()
+            else:
+                self.bitCheckBox.deselect()
+                self.bitImage.pack_forget()
+                
+            if (self.config.CFGadaptThresh == 1 or self.config.CFGmanuThresh == 1):
+                self.threshCheckBox.select()
+                self.threshImage.pack(in_=self.threshImageFrame)
+                if (self.config.threshO == 1):
+                    self.thresholdOutputCK.select()
+                else:
+                    self.thresholdOutputCK.deselect()
+            else:
+                self.threshCheckBox.deselect()
+                self.threshImage.pack_forget()
+                
+            if (self.config.CFGtextureAnalysis == 1):
+                self.textureCheckBox.select()
+                self.textureImage.pack(in_=self.textureImageFrame)
+                self.textureOutputCK.configure(state="normal")
+                self.textureOutputCK.select()
+                self.textureOutputCK.configure(state="disabled")                        
+            else:
+                self.textureCheckBox.deselect()
+                self.textureCheckBox.configure(state="disabled")
+                self.textureImage.pack_forget()
+                self.textureOutputCK.deselect()
+                
+            self.config.CFGdirectory = 0    
     
     def delProfiles(self):
     
-        # Deletes the File
-        self.deletingFile = self.savedProfilefilepath + os.path.sep + str(self.existingProfiles2.get())
-        os.remove(self.deletingFile)
-        
-        # Removes The Entry User Deleted from All Menus
-        self.deleteprofilesMenu.delete(str(self.existingProfiles2.get()))                
-        self.loadprofilesMenu.delete(str(self.existingProfiles2.get()))     
+        if (str(self.existingProfiles2.get()) != ""):
+            # Deletes the File
+            self.deletingFile = self.savedProfilefilepath + os.path.sep + str(self.existingProfiles2.get())
+            os.remove(self.deletingFile)
+            
+            # Removes The Entry User Deleted from All Menus
+            self.deleteprofilesMenu.delete(str(self.existingProfiles2.get()))                
+            self.loadprofilesMenu.delete(str(self.existingProfiles2.get()))     
         
     def userGuide(self):        
         webbrowser.open_new(r"http://lmgtfy.com/?q=Textures+in+HD")
@@ -636,7 +641,7 @@ Designed for the Ray Truant research lab.
             # Overriding User Clicking X to close
             self.runWindow.protocol('WM_DELETE_WINDOW', self.mExit)
             
-            self.runWindow.progress = ttk.Progressbar(self.runWindow, orient=HORIZONTAL,length=400, maximum=len(self.config.tifFiles), variable=self.progCount, mode='determinate')
+            self.runWindow.progress = ttk.Progressbar(self.runWindow, orient=HORIZONTAL,length=400, maximum=(len(self.config.tifFiles)-1), variable=self.progCount, mode='determinate')
             self.runWindow.progress.pack(padx=20,pady=20)
             self.runWindow.progress.start
 
@@ -665,7 +670,9 @@ Designed for the Ray Truant research lab.
 # Main Processing Code # - ADDITIONAL NOTE : IF at any time something is the only step or last step its easy to check by checking if stepsArray[-1] = w.e you are doing!!!!!
 # Will now Create a Results Folder --> Threshold/8BIT_Converted_Images/Texture Analysis Folder --> DATE/DATASET/TYPEFOLDER --> FILES            
         proccessing = ProcessingFunctions()
-        for image in tqdm(self.tifFiles):
+        for image in self.tifFiles:
+            
+            
             
             self.progCount.set(self.tifFiles.index(image))
             
@@ -787,7 +794,10 @@ Designed for the Ray Truant research lab.
                     img = cv2.imread(image,0)
                 # Will save values into a row in a file named by filepath of dataset for each neighborhood size 
                 # ###### Would defintely be faster if all calculated and stored then file opened only once file IO is a heavy strain! ###### #
-                for nhood in self.config.TextureNeighborhoods:
+                for nhood in tqdm(self.config.TextureNeighborhoods):
+                    
+                    self.tic = time.clock()
+                    
                     coMAT = proccessing.GLCM(img,int(nhood))                                               
                     imageTextureFeature = proccessing.haralickALL(coMAT)                        
                     filepath = os.path.dirname(os.path.abspath(__file__))                                                                  
@@ -817,13 +827,18 @@ Designed for the Ray Truant research lab.
                     f.write(",".join(imageTextureFeature) + "\n")
                     f.close
 
+                    self.toc = time.clock()
+                    self.zime = self.toc - self.tic
+                    self.timeset.append(self.zime)
+                    
             self.runWindow.progress.step
             # Resets Labels and updates Image Counter
             for counter in range (0,len(stepsArray)):
                 self.label[stepsArray[counter] + "a"].config(text='Pending')
             self.label[stepsArray[0] + "a"].config(text='In Progress')
-            self.imageCount +=1
-        #self.runWindow.progress.stop
+            self.imageCount +=1           
+            print self.timeset
+            
         
 
  

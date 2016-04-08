@@ -3,8 +3,33 @@
 - BitFunction Processing                                    --> Nishanth    (Completed)
 - Saving Option for Intermediates GUI                       --> Bilal       (Completed)
 - Saving Option For Intermediates Functionality             --> Bilal       (Completed)
-- Profile Loading/Saving  GUI/Functionality (Pickle/Dill)   --> Everyone    [Issue with this is we dont output our variabeles anywhere for the user to see yet so How do they know what the profile holds if they pick one?] 
-- ProgressBar(TQDM GUI)                                     --> Nishanth                    
+- Profile Loading/Saving  GUI/Functionality (Pickle/Dill)   --> Everyone    (Completed) 
+- ProgressBar(TQDM GUI)                                     --> Nishanth    (Completed)
+
+
+- try/catch for each save/load menu option    		                    --> Bilal  (Completed)
+
+- test haralick/glcm with manual data [small subset]	                --> Nishanth	
+
+- test ranges for neighborhood sizes in GLCM: [record time] [record errors on haralick features]    --> Everyone
+
+- intervals of 10 				                                        --> Bilal (Completed)
+
+- Linear Discriminant Analysis of features	                            --> Nishanth
+
+- Documentation of everything				                            --> Sitdown With Tyler
+
+- User Guide                                                            --> Sitdown With Tyler 
+
+- Bug Testing/ User Friendliness GUI			                        --> 
+
+- Bit Function Test 				                                    --> Everyone
+
+- Otsu's						                                        --> Nishanth
+
+- overall try/catch 					                                             [Completed]
+    
+- Executable						                                    --> Everyone
 
 
 
@@ -12,9 +37,40 @@ TESTING ISSUES SO FAR:
 
 - http://stackoverflow.com/questions/27784528/numpy-division-with-runtimewarning-invalid-value-encountered-in-double-scalars (line 197 HARALICK!)
     Need to use higher math module?
-    NOT RESOLVED --- I just changed it so that if the denominator is 0, return 0 for that function. So kinda solved, but not perfect haha
+    NOT RESOLVED
 - For Ask Directory button if you press cancel or make no selection : WindowsError: [Error 3] The system cannot find the path specified: ''
     We have to raise an exception or something so that doesn't mess everything up
     !RESOLVED!
 - Clicking X on main window by accident would cause loss of current session / no warnings currently --> Overrid the default behavior !RESOLVED!
-- Attribute error when loading a saved profile and running without selecting a directory.
+- Attribute error when loading a saved profile and running without selecting a directory.   !RESOLVED!
+
+
+- Exception in thread Thread-1:
+        Traceback (most recent call last):
+          File "C:\Users\Bilal Athar\Anaconda\lib\threading.py", line 801, in __bootstrap_inner
+            self.run()
+          File "C:\Users\Bilal Athar\Anaconda\lib\threading.py", line 754, in run
+            self.__target(*self.__args, **self.__kwargs)
+          File "GUI_V3.py", line 681, in runConfigure
+            self.labelImageProcess.config(text="Processing Image: " + str(self.imageCount) + " Of " + str(len(self.tifFiles)) + " Images")
+          File "C:\Users\Bilal Athar\Anaconda\lib\lib-tk\Tkinter.py", line 1326, in configure
+            return self._configure('configure', cnf, kw)
+          File "C:\Users\Bilal Athar\Anaconda\lib\lib-tk\Tkinter.py", line 1317, in _configure
+            self.tk.call(_flatten((self._w, cmd)) + self._options(cnf))
+        TclError: Noneunknown option "None"
+
+        When I tried to do final imageset / 2,5,10,20,30,40,50,60,70,80,90 just texture analysis
+        
+        
+        
+        
+        
+        
+        
+- POTENTIAL ISSUE :  [Every Run took a minute even when the nhood was 2 or 60..... need to troubleshoot!!!!!!! There are changes in some of the features though.. its weird lol check the texture file for final in results
+Neighborhood Size:  ['2', '5', '10', '20', '30', '40', '50', '60']
+bitO:  0
+threshO:  0
+Time per Run []:
+[61.36206744667385s, 62.02717880296265s, 61.669726398795774s, 61.368052633379534s, 60.67524075879646s, 60.25514402764236s, 60.15988821607567s, 60.699219992815756s]
+TASK IS DONE!
