@@ -82,7 +82,8 @@ class ThresholdAnalysis():
         self.adapt.description.text.insert('end',"Adaptive thresholding uses pixel neighbourhoods to threshold according to small regions of the image. This technique is especially useful when different regions of the image contain varying brightness. The pixel neighbourhoods can either be measured simply as the mean or using a gaussian weighted sum.")
 
         self.adapt.description.text.pack(side="left",fill='x',expand=False)
-
+        self.adapt.description.text.configure(state="disabled")
+        
         self.adapt.description.submit = tk.Button(self.adapt.description, text="submit",state='disabled', command=self.adaptSubmit)
         self.adapt.description.submit.pack(side="left",fill='both',expand=True)
 
@@ -114,6 +115,7 @@ class ThresholdAnalysis():
         self.manu.description.text.insert('end',"In this mode, select and preview different threshold values. Once satisfied with your decision, press SUBMIT to threshold all the images in this folder at the value displayed in the box above.")
 
         self.manu.description.text.pack(side="left",fill='x',expand=False)
+        self.manu.description.text.configure(state="disabled")
 
         self.manu.description.submit = tk.Button(self.manu.description, text="submit",state='disabled', command=self.manuSubmit)
         self.manu.description.submit.pack(side="left",fill='both',expand=True)

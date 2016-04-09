@@ -106,6 +106,7 @@ TASK IS DONE!
 
 
 
+- Thresholding descriptors weren't disabled before [RESOLVED]
 
 
 

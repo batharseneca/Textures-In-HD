@@ -258,7 +258,7 @@ class Introduction(Config):
             self.loadprofilesMenu.delete(str(self.existingProfiles2.get()))     
         
     def userGuide(self):        
-        webbrowser.open_new(r"http://lmgtfy.com/?q=Textures+in+HD")
+        webbrowser.open_new(r"https://github.com/nishanthmerwin/ImageAnalysis-IGP/wiki")
         
     def mExit(self):
         # Overrides default exit prompt
@@ -881,5 +881,5 @@ try:
     app.myParent.title("Textures in HD")
     root.mainloop()        
 except (Exception, KeyboardInterrupt, IOError) as e:
-    messagebox.showerror("Error", e.__doc__ + "\n" + e.message + "\nProgram Will Be Closed")
+    messagebox.showerror("Error", e.__doc__.title() + "\n" + e.message.title() + "\nProgram Will Be Closed")
     root.destroy()
