@@ -183,7 +183,17 @@ class Introduction(Config):
                 self.textureCheckBox.configure(state="normal")
                 
             if (self.config.CFGbitConversion == 1):           
+                
+                self.bitCheckBox.configure(state="normal")
+                self.bitOutputCK.configure(state="normal")
+                self.textureButton.configure(state="normal")
+                self.threshButton.configure(state="normal")
+                self.threshCheckBox.configure(state="normal")
+                self.thresholdOutputCK.configure(state="normal")
+                self.textureCheckBox.configure(state="normal")
+                
                 self.bitCheckBox.select()
+                self.bitCheckBox.configure(state="normal")
                 self.bitImage.pack(in_=self.bitImageFrame)            
                 if (self.config.bitO == 1):
                     self.bitOutputCK.select()
@@ -194,6 +204,15 @@ class Introduction(Config):
                 self.bitImage.pack_forget()
                 
             if (self.config.CFGadaptThresh == 1 or self.config.CFGmanuThresh == 1):
+                
+                self.bitCheckBox.configure(state="normal")
+                self.bitOutputCK.configure(state="normal")
+                self.textureButton.configure(state="normal")
+                self.threshButton.configure(state="normal")
+                self.threshCheckBox.configure(state="normal")
+                self.thresholdOutputCK.configure(state="normal")
+                self.textureCheckBox.configure(state="normal")
+                
                 self.threshCheckBox.select()
                 self.threshImage.pack(in_=self.threshImageFrame)
                 if (self.config.threshO == 1):
@@ -205,6 +224,15 @@ class Introduction(Config):
                 self.threshImage.pack_forget()
                 
             if (self.config.CFGtextureAnalysis == 1):
+                
+                self.bitCheckBox.configure(state="normal")
+                self.bitOutputCK.configure(state="normal")
+                self.textureButton.configure(state="normal")
+                self.threshButton.configure(state="normal")
+                self.threshCheckBox.configure(state="normal")
+                self.thresholdOutputCK.configure(state="normal")
+                self.textureCheckBox.configure(state="normal")
+                
                 self.textureCheckBox.select()
                 self.textureImage.pack(in_=self.textureImageFrame)
                 self.textureOutputCK.configure(state="normal")
