@@ -102,6 +102,8 @@ Time per Run []:
 TASK IS DONE!
 
 
+- Tested Independently added 900 nhood size and it completed in 20s... so its definitly the way the matrix itself is coded not the GUI/sending nhoods to the method or anything like that.. not that its not int etc..
+
 
 
 
