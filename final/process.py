@@ -3,19 +3,20 @@ import cv2
 import math as mt
 
 from config import *
+from skimage import img_as_ubyte
 
 # All the Processing Code - Need to Ensure All Latest Versions Used # 
 class ProcessingFunctions():
 
-    def check8bitImage(self,image):
-        if(image.dtype == np.dtype("uint8")):
-            return True
-        else:
-            return False
+    # def check8bitImage(self,image):
+        # if(image.dtype == np.dtype("uint8")):
+            # return True
+        # else:
+            # return False
 
             
     def convertTo8bit(self,image):	
-        image = image.astype(np.uint8)
+        image = img_as_ubyte(image)       
         return image
         
         

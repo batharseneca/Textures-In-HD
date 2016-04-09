@@ -670,7 +670,7 @@ Designed for the Ray Truant research lab.
 # Main Processing Code # - ADDITIONAL NOTE : IF at any time something is the only step or last step its easy to check by checking if stepsArray[-1] = w.e you are doing!!!!!
 # Will now Create a Results Folder --> Threshold/8BIT_Converted_Images/Texture Analysis Folder --> DATE/DATASET/TYPEFOLDER --> FILES            
         proccessing = ProcessingFunctions()
-        for image in self.tifFiles:
+        for image in tqdm(self.tifFiles):
             
             
             
@@ -690,27 +690,29 @@ Designed for the Ray Truant research lab.
                 except AttributeError:
                     print image.split(os.path.sep)[-1].strip() + " is not a valid image." 
                     continue
-                if isEightBit == False:
-                    img = proccessing.convertTo8bit(img)                                            
-                    if (self.config.bitO == 1):
-                        date = time.strftime("%d_%m_%Y")    
-                        filepath = os.path.dirname(os.path.abspath(__file__))                            
-                        outputPath = self.config.directory.replace("/","*")
-                        outputPath = outputPath.replace("\\","*")
-                        outputArray = outputPath.split("*")
-                        outputPath = outputArray[-1]                            
-                        imageName = image.replace("/","*")
-                        imageName = imageName.replace("\\","*")                        
-                        name_Array = imageName.split("*")
-                        imageName = name_Array[-1]                            
-                        filepath = filepath + os.path.sep + "Results" + os.path.sep + "8BIT_Converted_Images" + os.path.sep + date + outputPath + "_8BIT_" 
-                        try: 
-                            os.makedirs(filepath)
-                        except OSError:
-                            if not os.path.isdir(filepath):
-                                raise
-                        print imageName
-                        cv2.imwrite(os.path.join(filepath, imageName), img)                    
+                # if (proccessing.check8bitImage(img) is False):
+                img = proccessing.convertTo8bit(img)                                            
+                if (self.config.bitO == 1):
+                    date = time.strftime("%d_%m_%Y")    
+                    filepath = os.path.dirname(os.path.abspath(__file__))                            
+                    outputPath = self.config.directory.replace("/","*")
+                    outputPath = outputPath.replace("\\","*")
+                    outputArray = outputPath.split("*")
+                    outputPath = outputArray[-1]                            
+                    imageName = image.replace("/","*")
+                    imageName = imageName.replace("\\","*")                        
+                    name_Array = imageName.split("*")
+                    imageName = name_Array[-1]                            
+                    filepath = filepath + os.path.sep + "Results" + os.path.sep + "8BIT_Converted_Images" + os.path.sep + date + outputPath + "_8BIT_" 
+                    try: 
+                        os.makedirs(filepath)
+                    except OSError:
+                        if not os.path.isdir(filepath):
+                            raise
+                        # print str(imageName)
+                        # print "helllllllllllllllo"
+                        # print name_Array
+                    cv2.imwrite(os.path.join(filepath, imageName), img)                    
             # Check if Adaptive or Manual Thresholding is Selected
             if (self.config.CFGadaptThresh == 1):
                 # Updates Label to show Step 1 completed and thresholding commenced if Step 1 was Bit Coversion
@@ -794,7 +796,7 @@ Designed for the Ray Truant research lab.
                     img = cv2.imread(image,0)
                 # Will save values into a row in a file named by filepath of dataset for each neighborhood size 
                 # ###### Would defintely be faster if all calculated and stored then file opened only once file IO is a heavy strain! ###### #
-                for nhood in tqdm(self.config.TextureNeighborhoods):
+                for nhood in self.config.TextureNeighborhoods:
                     
                     self.tic = time.clock()
                     

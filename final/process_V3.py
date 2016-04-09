@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import math as mt
 
+from skimage import img_as_ubyte
 
 # All the Processing Code - Need to Ensure All Latest Versions Used # 
 class ProcessingFunctions():
@@ -13,8 +14,9 @@ class ProcessingFunctions():
             return False
 
             
-    def convertTo8bit(self,image):	
-        image = image.astype(np.uint8)
+    def convertTo8bit(self,image):
+        image = img_as_ubyte(image)  
+        #image = image.astype(np.uint8)
         return image
         
         

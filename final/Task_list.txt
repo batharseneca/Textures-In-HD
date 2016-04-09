@@ -23,13 +23,13 @@
 
 - Bug Testing/ User Friendliness GUI			                        --> 
 
-- Bit Function Test 				                                    --> Everyone
+- Bit Function Test 				                                    --> Everyone (Bilal - Preliminary Completion Changed Code needs Review!)
 
 - Otsu's						                                        --> Nishanth
 
 - overall try/catch 					                                             [Completed]
     
-- Executable						                                    --> Everyone
+- Executable						                                    --> Everyone  (This is Definitly wierder then we thought even >.>)
 
 
 
@@ -38,6 +38,8 @@ TESTING ISSUES SO FAR:
 - http://stackoverflow.com/questions/27784528/numpy-division-with-runtimewarning-invalid-value-encountered-in-double-scalars (line 197 HARALICK!)
     Need to use higher math module?
     NOT RESOLVED
+    
+    
 - For Ask Directory button if you press cancel or make no selection : WindowsError: [Error 3] The system cannot find the path specified: ''
     We have to raise an exception or something so that doesn't mess everything up
     !RESOLVED!
@@ -45,7 +47,7 @@ TESTING ISSUES SO FAR:
 - Attribute error when loading a saved profile and running without selecting a directory.   !RESOLVED!
 
 
-- Exception in thread Thread-1:
+- Exception in thread Thread-1:               ~~~~~~~NOT RESOLVED~~~~~~~~~
         Traceback (most recent call last):
           File "C:\Users\Bilal Athar\Anaconda\lib\threading.py", line 801, in __bootstrap_inner
             self.run()
@@ -63,14 +65,46 @@ TESTING ISSUES SO FAR:
         
         
         
+- 8 bit Not Working !               ~~~~~~~RESOLVED~~~~~~~~~ PLEASE REVIEW ONCE!
+
+            I tried to convert Laura D Trial 1 files that say they are 16 bit depth.. but they arent failing the 8bit test it returns true - possibly cv2 imread doing this!
+            
+            Is 16 bit depth different from 16 bit ??? 
+            
+            Im starting to think when we do opencv imread it is already converting the image so every time we check the dtype it always passes true.
+            
+            I took the check out and just always convert now to 8 bit. When not converting and just printing from the opencv img its just black losing massssssive data. Any step we were including bitconvert before was losing ALOT of data
+            
+            Wierd error... when it converts it skips first image (indentation error - RESOLVED)
+            
+                        Converts perfectly now and images are identical but go from 8mb to like 200 kb!
+            
+            - Also read this "You should never use astype on an image, because it violates these assumptions about the dtype range"
+            http://scikit-image.org/docs/dev/user_guide/data_types.html
+            
+            It is suggesting an alternative to use :
+            
+            from skimage import img_as_ubyte
+        >>> image = np.array([0, 0.5, 1], dtype=float)
+        >>> img_as_ubyte(image)       <--- WORKS GREAT TESTED IT - IMPLEMENTED!
+            
+            
+           
         
         
-        
-        
-- POTENTIAL ISSUE :  [Every Run took a minute even when the nhood was 2 or 60..... need to troubleshoot!!!!!!! There are changes in some of the features though.. its weird lol check the texture file for final in results
+        ~~~~~~~NOT RESOLVED~~~~~~~~~ WE NEED TO DEBUG and make sure it is actually using the numbers for nhood for the desired purpose!?
+- POTENTIAL ISSUE :  [Every Run took a minute even when the nhood was 2 or 60..... need to troubleshoot!!!!!!! There are changes in some of the features though.. its weird check the texture file for final in results
 Neighborhood Size:  ['2', '5', '10', '20', '30', '40', '50', '60']
 bitO:  0
 threshO:  0
 Time per Run []:
 [61.36206744667385s, 62.02717880296265s, 61.669726398795774s, 61.368052633379534s, 60.67524075879646s, 60.25514402764236s, 60.15988821607567s, 60.699219992815756s]
 TASK IS DONE!
+
+
+
+
+
+
+
+- SIDE NOTE GITHUB MERGING IS SCREWD UP ITS NOT UPLOADING CERTAIN FOLDERS FOR ME NOW . 
