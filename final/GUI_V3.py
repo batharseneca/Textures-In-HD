@@ -698,20 +698,19 @@ Designed for the Ray Truant research lab.
 # Main Processing Code # - ADDITIONAL NOTE : IF at any time something is the only step or last step its easy to check by checking if stepsArray[-1] = w.e you are doing!!!!!
 # Will now Create a Results Folder --> Threshold/8BIT_Converted_Images/Texture Analysis Folder --> DATE/DATASET/TYPEFOLDER --> FILES            
         proccessing = ProcessingFunctions()
-        for image in tqdm(self.tifFiles):
-            
-            
-            
-            self.progCount.set(self.tifFiles.index(image))
-            
-            #print self.progCount.get()
+        for image in tqdm(self.tifFiles):            
+            self.progCount.set(self.tifFiles.index(image))            
+            #print self.progCount.get()            
+            img = cv2.imread(image,0)
+            try:
+                img.dtype
+            except AttributeError:
+                continue
             # Updates Image Counter
             self.labelImageProcess.config(text="Processing Image: " + str(self.imageCount) + " Of " + str(len(self.tifFiles)) + " Images")
             # First Checks for BitCoversion Selection
             if (self.config.CFGbitConversion == 1):
                 img = cv2.imread(image,0)
-
-
                 # If Image is not already 8 bit will convert
                 try:
                     isEightBit = proccessing.check8bitImage(img)

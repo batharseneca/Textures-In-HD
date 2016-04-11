@@ -229,14 +229,15 @@ class ThresholdAnalysis():
             self.adaptPreview.config(state='disabled')
             return True
         elif(not P.isdigit()):
-            self.adapt.description.submit.config(state='disabled')
+            self.adapt.description.submit.config(state='disabled')            
             self.adaptPreview.config(state='disabled')
             return True
         elif((int(P) % 2 == 1)  and (self.adapt.weighting.get() != "")):
-            self.adapt.description.submit.config(state='normal')
-            self.adaptPreview.config(state='normal')
-            self.blockSize = int(P)
-            print "weighting is: ------",self.adapt.weighting.get(),"------"
+            self.adapt.description.submit.config(state='normal')            
+            if (self.invalid == 0):
+                self.adaptPreview.config(state='normal')
+                self.blockSize = int(P)
+                print "weighting is: ------",self.adapt.weighting.get(),"------"
             return True
         else:
             self.adapt.description.submit.config(state='disabled')
@@ -255,7 +256,8 @@ class ThresholdAnalysis():
         elif(int(P)<256) and(int(P >= 0)):
             self.manuThreshButton.config(state='normal')
             self.manuThresh=P
-            self.manu.description.submit.config(state='normal')
+            if (self.invalid == 0):
+                self.manu.description.submit.config(state='normal')
             return True
         else:
             self.manuThreshButton.config(state='disabled')
@@ -326,16 +328,32 @@ class ThresholdAnalysis():
     def loadCurrentImage(self):
         index = self.index
         image = self.filePaths[index-1]
-    
-        img = Image.open(image)
-        img = img.resize((500,500), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-        self.pictureFrame.picture.configure(image=img)
-        self.pictureFrame.picture.picRef = img
-    
-        self.loadPictureInfo()
-        self.loadImageArray()
-        self.loadHist()
+        self.adaptPreview.configure(state="normal")
+        self.adapt.description.submit.configure(state="normal")
+        self.invalid = 0        
+        
+        try:
+            img = Image.open(image)
+            img = img.resize((500,500), Image.ANTIALIAS)
+            img = ImageTk.PhotoImage(img)
+            self.pictureFrame.picture.configure(image=img)
+            self.pictureFrame.picture.picRef = img
+        
+            self.loadPictureInfo()
+            self.loadImageArray()
+            self.loadHist()
+        except IOError:
+            self.invalid = 1
+            filepath = os.path.dirname(os.path.abspath(__file__))
+            filepath = filepath + os.path.sep + "invalid_file.jpg"
+            img = Image.open(filepath)
+            img = img.resize((500,500), Image.ANTIALIAS)
+            img = ImageTk.PhotoImage(img)
+            self.pictureFrame.picture.configure(image=img)
+            self.pictureFrame.picture.picRef = img
+            self.adaptPreview.configure(state="disabled")
+            self.adapt.description.submit.configure(state="disabled")
+        
 
         
     def loadImages(self):          

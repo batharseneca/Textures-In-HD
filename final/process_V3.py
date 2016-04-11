@@ -7,6 +7,13 @@ from skimage import img_as_ubyte
 # All the Processing Code - Need to Ensure All Latest Versions Used # 
 class ProcessingFunctions():
 
+    def isImage(self,image):
+        if(img.dtype):
+            return True
+        else:
+            return False
+      
+
     def check8bitImage(self,image):
         if(image.dtype == np.dtype("uint8")):
             return True
