@@ -871,9 +871,13 @@ Designed for the Ray Truant research lab.
         
 
  
+'''' 
+root = tk.Tk()
+app = Introduction(root)
+app.myParent.title("Textures in HD")
+root.mainloop()        
  
- 
- 
+''' 
 try:
     root = tk.Tk()
     app = Introduction(root)

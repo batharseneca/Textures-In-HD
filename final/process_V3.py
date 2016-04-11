@@ -4,6 +4,8 @@ import math as mt
 
 from skimage import img_as_ubyte
 
+from skimage.feature import greycomatrix
+
 # All the Processing Code - Need to Ensure All Latest Versions Used # 
 class ProcessingFunctions():
 
@@ -29,77 +31,22 @@ class ProcessingFunctions():
         
     
     def GLCM(self,Img,nhood):
-        CoMatDim=(np.amax(Img)+1,np.amax(Img)+1) 
-        CoMat=np.zeros(CoMatDim,dtype=np.uint) #Initialize CoMat as matrix of zeros
-
-        #First Direction
-        ImgCopy1RowKeep=np.arange(nhood,Img.shape[0])
-        ImgCopy2RowKeep=np.arange(0,Img.shape[0]-nhood)
-        ImgCopy1=Img[ImgCopy1RowKeep,:]
-        ImgCopy2=Img[ImgCopy2RowKeep,:]
-
-        ImgCopy1ColKeep=np.arange(nhood,Img.shape[1])
-        ImgCopy2ColKeep=np.arange(0,Img.shape[1]-nhood)
-        ImgCopy1=ImgCopy1[:,ImgCopy1ColKeep]
-        ImgCopy2=ImgCopy2[:,ImgCopy2ColKeep]
-
-        ImgFlat1=np.ndarray.flatten(ImgCopy1)
-        ImgFlat2=np.ndarray.flatten(ImgCopy2)
-
-
-        for d in range(0,ImgFlat1.shape[0]):
-            CoMat[ImgFlat1[d],ImgFlat2[d]]=CoMat[ImgFlat1[d],ImgFlat2[d]]+1
-
-        #Second Direction
-        ImgCopy1RowKeep=np.arange(nhood,Img.shape[0])
-        ImgCopy2RowKeep=np.arange(0,Img.shape[0]-nhood)
-        ImgCopy1=Img[ImgCopy1RowKeep,:]
-        ImgCopy2=Img[ImgCopy2RowKeep,:]
-
-        ImgFlat1=np.ndarray.flatten(ImgCopy1)
-        ImgFlat2=np.ndarray.flatten(ImgCopy2)
-
-        for d in range(0,ImgFlat1.shape[0]):
-            CoMat[ImgFlat1[d],ImgFlat2[d]]=CoMat[ImgFlat1[d],ImgFlat2[d]]+1
-
-        #Third Direction
-        ImgCopy1RowKeep=np.arange(0,Img.shape[0]-nhood)
-        ImgCopy2RowKeep=np.arange(nhood,Img.shape[0])
-        ImgCopy1=Img[ImgCopy1RowKeep,:]
-        ImgCopy2=Img[ImgCopy2RowKeep,:]
-
-        ImgCopy1ColKeep=np.arange(nhood,Img.shape[1])
-        ImgCopy2ColKeep=np.arange(0,Img.shape[1]-nhood)
-        ImgCopy1=ImgCopy1[:,ImgCopy1ColKeep]
-        ImgCopy2=ImgCopy2[:,ImgCopy2ColKeep]
-
-        ImgFlat1=np.ndarray.flatten(ImgCopy1)
-        ImgFlat2=np.ndarray.flatten(ImgCopy2)
-
-        for d in range(0,ImgFlat1.shape[0]):
-            CoMat[ImgFlat1[d],ImgFlat2[d]]=CoMat[ImgFlat1[d],ImgFlat2[d]]+1
-
-        #Fourth Direction
-        ImgCopy1ColKeep=np.arange(nhood,Img.shape[1])
-        ImgCopy2ColKeep=np.arange(0,Img.shape[1]-nhood)
-        ImgCopy1=Img[:,ImgCopy1ColKeep]
-        ImgCopy2=Img[:,ImgCopy2ColKeep]
-
-        ImgFlat1=np.ndarray.flatten(ImgCopy1)
-        ImgFlat2=np.ndarray.flatten(ImgCopy2)
-
-        for d in range(0,ImgFlat1.shape[0]):
-            CoMat[ImgFlat1[d],ImgFlat2[d]]=CoMat[ImgFlat1[d],ImgFlat2[d]]+1
-
-        CoMat = np.delete(CoMat,(0),axis=0)
-        CoMat = np.delete(CoMat,(0),axis=1) 
-
-        CoMat = CoMat.astype(np.float_)
-        
-        CoMat=np.divide(CoMat,np.sum(CoMat)) #Normalize CoMat#
+        # Using the skimage package
+        CoMat4D = greycomatrix(Img, angles= [0, np.pi/2, np.pi, 3*np.pi/2], distances = [nhood], levels=256)
+        # Sum accross all directions
+        CoMat = np.zeros((256,256),dtype=np.int)
+        for i in range(0,3):
+            CoMat += CoMat4D[:,:,0,i]
+        # Remove 0,0 axes
+        CoMat = np.delete(CoMat, (0), axis=0)
+        CoMat = np.delete(CoMat, (0), axis=1)
+        # Normalize
+        CoMat = CoMat.astype(np.float64)
+        glcm_sums = np.apply_over_axes(np.sum, CoMat, axes=(0, 1))
+        glcm_sums[glcm_sums == 0] = 1
+        CoMat /= glcm_sums
         
         return CoMat
- 
  
  
     def haralickALL(self,CoMat):
@@ -132,7 +79,7 @@ class ProcessingFunctions():
             for j in range(0,CoMat.shape[1]-1):
                 val += (CoMat[i][j])**2
         return val
-	
+    
     ## Contrast adds the comatrival, but favours when values are away from the diagonal
     def contrast(self,CoMat):
         val=0
@@ -180,9 +127,9 @@ class ProcessingFunctions():
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
                 val += ((i-xmeanVal)**2) * CoMat[i][j]
-        return val	
+        return val    
             
-    # Vertical Standard Deviation	
+    # Vertical Standard Deviation    
     def ystdev(self,CoMat):
         val = 0
         ymeanVal = self.ymean(CoMat)
@@ -203,7 +150,7 @@ class ProcessingFunctions():
         for i in range(0,CoMat.shape[0]-1):
             for j in range(0,CoMat.shape[1]-1):
                 val += ((i*j) * CoMat[i][j] - (xmeanVal-ymeanVal))/(xStdVal*yStdVal)
-        return val	
+        return val    
 
     # Total Mean
     def mean(self,CoMat):
@@ -244,7 +191,7 @@ class ProcessingFunctions():
                 j += 1
             return val
 
-    # Sum Average	
+    # Sum Average    
     def sumAverage(self,CoMat):
         val = 0
         for k in range(0,CoMat.shape[0]*2-2):
