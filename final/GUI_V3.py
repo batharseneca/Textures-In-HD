@@ -22,6 +22,10 @@ import time
 import dill
 import threading
 
+
+#import win32api
+#import thread
+
 ## Import our classes!!
 from config_V3 import Config
 from texture_V3 import *
@@ -38,7 +42,21 @@ class Introduction(Config):
         self.progCount = IntVar()
         self.timeset = []
         
-      
+    
+
+    # Now set our handler for CTRL_C_EVENT. Other control event 
+    # types will chain to the next handler.
+  #  def handler(dwCtrlType, hook_sigint=thread.interrupt_main):
+    #    if dwCtrlType == 0: # CTRL_C_EVENT
+      #      hook_sigint()
+      #      return 1 # don't chain to the next handler
+     #   return 0 # chain to the next handler
+
+   # win32api.SetConsoleCtrlHandler(handler, 1)
+    
+    
+
+    
     def displaySettings(self):
         # DONE for now by just using 1 string, however if we used multiple labels manipulating colors/fonts and everything to make it more legible would be easy!
         OutputString = "Please Keep In Mind Only Steps That Have Been Configured With Parameters Will Be Recognized!\n"
@@ -669,7 +687,7 @@ Designed for the Ray Truant research lab.
             # Overriding User Clicking X to close
             self.runWindow.protocol('WM_DELETE_WINDOW', self.mExit)
             
-            self.runWindow.progress = ttk.Progressbar(self.runWindow, orient=HORIZONTAL,length=400, maximum=(len(self.config.tifFiles)-1), variable=self.progCount, mode='determinate')
+            self.runWindow.progress = ttk.Progressbar(self.runWindow, orient=HORIZONTAL,length=400, maximum=(len(self.config.tifFiles)), variable=self.progCount, mode='determinate')
             self.runWindow.progress.pack(padx=20,pady=20)
             self.runWindow.progress.start
 

@@ -3,7 +3,6 @@ import cv2
 import math as mt
 
 from skimage import img_as_ubyte
-
 from skimage.feature import greycomatrix
 
 # All the Processing Code - Need to Ensure All Latest Versions Used # 

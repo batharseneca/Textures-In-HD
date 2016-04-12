@@ -47,7 +47,7 @@ class ThresholdAnalysis():
         self.adapt.controlsFrame = tk.Frame(self.adapt)
         self.adapt.controlsFrame.pack(side='top')
 
-        n_hoodLabel = tk.Label(self.adapt.controlsFrame, text= "Set block size (must be odd integer): ")
+        n_hoodLabel = tk.Label(self.adapt.controlsFrame, text= "Set block size (must be odd integer > 1): ")
         n_hoodLabel.pack(side='left',expand=True,ipady=30)
 
         checkBlock = self.adapt.register(self.validateBlock)
@@ -232,12 +232,13 @@ class ThresholdAnalysis():
             self.adapt.description.submit.config(state='disabled')            
             self.adaptPreview.config(state='disabled')
             return True
-        elif((int(P) % 2 == 1)  and (self.adapt.weighting.get() != "")):
-            self.adapt.description.submit.config(state='normal')            
-            if (self.invalid == 0):
-                self.adaptPreview.config(state='normal')
+        elif((int(P) % 2 == 1)  and (int(P) > 1)):
+            if (self.adapt.weighting.get() != ""):
+                self.adapt.description.submit.config(state='normal')
                 self.blockSize = int(P)
-                print "weighting is: ------",self.adapt.weighting.get(),"------"
+            print "weighting is: ------",self.adapt.weighting.get(),"------"
+            if (self.invalid == 0):
+                self.adaptPreview.config(state='normal')                                
             return True
         else:
             self.adapt.description.submit.config(state='disabled')
@@ -254,10 +255,10 @@ class ThresholdAnalysis():
             self.manu.description.submit.config(state='disabled')
             return True
         elif(int(P)<256) and(int(P >= 0)):
-            self.manuThreshButton.config(state='normal')
+            self.manu.description.submit.config(state='normal')            
             self.manuThresh=P
             if (self.invalid == 0):
-                self.manu.description.submit.config(state='normal')
+                self.manuThreshButton.config(state='normal')
             return True
         else:
             self.manuThreshButton.config(state='disabled')
@@ -327,14 +328,16 @@ class ThresholdAnalysis():
 
     def loadCurrentImage(self):
         index = self.index
-        image = self.filePaths[index-1]
-        self.adaptPreview.configure(state="normal")
-        self.adapt.description.submit.configure(state="normal")
+        image = self.filePaths[index-1]        
         self.invalid = 0        
         
         try:
-            img = Image.open(image)
-            img = img.resize((500,500), Image.ANTIALIAS)
+            img = Image.open(image)                                             
+            try:
+                img = img.resize((500,500), Image.ANTIALIAS)
+            except:
+                img = img.point(lambda i:i*(1./256)).convert('L')
+                img = img.resize((500,500), Image.ANTIALIAS)
             img = ImageTk.PhotoImage(img)
             self.pictureFrame.picture.configure(image=img)
             self.pictureFrame.picture.picRef = img
@@ -347,12 +350,13 @@ class ThresholdAnalysis():
             filepath = os.path.dirname(os.path.abspath(__file__))
             filepath = filepath + os.path.sep + "invalid_file.jpg"
             img = Image.open(filepath)
+            print img.mode
             img = img.resize((500,500), Image.ANTIALIAS)
             img = ImageTk.PhotoImage(img)
             self.pictureFrame.picture.configure(image=img)
             self.pictureFrame.picture.picRef = img
             self.adaptPreview.configure(state="disabled")
-            self.adapt.description.submit.configure(state="disabled")
+            self.manuThreshButton.configure(state="disabled")
         
 
         
