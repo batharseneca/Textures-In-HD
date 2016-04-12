@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="./nv.d3.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+    <script src="./nv.d3.js"></script>
+
+    <style>
+        text {
+            font: 12px sans-serif;
+        }
+        svg {
+            display: block;
+        }
+        html, body, #test1, svg {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="test1" class='with-3d-shadow with-transitions'>
+    <svg></svg>
+</div>
+
+<script>
+
+getData()
+
+
+function onlyUnique(value, index, self) { 
+  return self.indexOf(value) === index;
+}
+
+function getData(){
+
+  fileName = []
+  group = []
+  pc1 = []
+  pc2 = []
+  dataset = []
+  d3.csv("./pca.csv", function(d) {
+    return {
+      fileName: d.fileNames,
+      group: d.group,
+      pc1: +d.PC1,
+      pc2: +d.PC2,
+    };
+  },
+  function(error,rows){
+    for(i in rows){
+      //console.log(rows[i].fileName);
+      dataset.push([rows[i].fileName, rows[i].group, rows[i].pc1, rows[i].pc2 ]);
+      fileName.push(rows[i].fileName)
+      group.push(rows[i].group)
+      pc1.push(rows[i].pc1)
+      pc2.push(rows[i].pc2)
+      
+    }
+
+    function onlyUnique(value, index, self) { 
+      return self.indexOf(value) === index;
+    }
+    
+    var uniqueGroups = group.filter( onlyUnique )
+
+    console.log(uniqueGroups);
+
+    var data = [];
+
+    for (i in uniqueGroups){
+      data.push({ key: uniqueGroups[i], values: [] });
+
+      for (j in group){
+        
+        if(group[j] == uniqueGroups[i]){
+          data[i].values.push({ x: pc1[j], y: pc2[j], size: Math.random() ,
+				shape: "circle", filePath: fileName[j]  });
+
+        }
+      } 
+    }
+
+
+
+/*
+    // register our custom symbols to nvd3
+    // make sure your path is valid given any size because size scales if the chart scales.
+    nv.utils.symbolMap.set('thin-x', function(size) {
+        size = Math.sqrt(size);
+        return 'M' + (-size/2) + ',' + (-size/2) +
+                'l' + size + ',' + size +
+                'm0,' + -(size) +
+                'l' + (-size) + ',' + size;
+    });
+
+
+*/
+
+    // create the chart
+    var chart;
+    nv.addGraph(function() {
+        chart = nv.models.scatterChart()
+            .showDistX(true)
+            .showDistY(true)
+           // .useVoronoi(true)
+            .color(d3.scale.category10().range())
+            .duration(300)
+        ;
+        chart.dispatch.on('renderEnd', function(){
+            console.log('render complete');
+        });
+
+
+        chart.sizeDomain = [1,10];
+        chart.sizeRange = [16,256];
+        chart.xAxis.axisLabel("Principle Component 1");
+        chart.yAxis.axisLabel("Principle Component 2");
+        chart.xAxis.tickFormat(d3.format('.02f'));
+        chart.yAxis.tickFormat(d3.format('.02f'));
+
+        d3.select('#test1 svg')
+            .datum(data)
+            .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        chart.dispatch.on('stateChange', function(e) { ('New State:', JSON.stringify(e)); });
+
+  chart.tooltipContent(function(key) {
+      console.log(key);
+      var text = '<h3>' + uniqueGroups[key.seriesIndex] + '</h3>' + "<br>";
+      var filePath = key.point.filePath;
+      filePath = filePath.substring(0,filePath.indexOf(".tif"));
+      text += "<img src='../compressed/" + filePath + ".png' style='width:200px;height:200px;'>";
+      return text;//'<div class="testing">' + uniqueGroups[key.seriesIndex] + key.point.filePath;
+  });
+
+  chart.point.on("click",function(e){
+	console.log(e);
+});
+
+  d3.selectAll(".nv-point").on("click", function(e) {
+      console.log(e);
+      //alert("<img src='../pngImages/" + filePath + ".png' style='width:200px;height:200px;'>");
+  });
+
+        return chart;
+    });
+
+  })
+}
+</script>
+</body>
+</html>
