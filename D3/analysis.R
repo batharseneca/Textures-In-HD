@@ -19,11 +19,6 @@ treated <- grepl("kinetin",formatted[,1])
 
 formatted <- cbind(HD,treated,formatted)
 
-dim(formatted)
-
-# log.HD <- log1p(formatted[, 4:54])
-
-
 
 haraNames <- c("Angular Second Moment", "Contrast","Inverse Difference Moment","Entropy", "X-Mean","Y-Mean","X-Standard Deviation", "Y-Standard Deviation", "Correlation","Mean","Variance","Sum Average","Sum Entropy","Difference Entropy","Inertia","Cluster Shade","Cluster Prominence")
 
@@ -83,6 +78,14 @@ pca_data <- cbind(group,pca_data)
 
 pca_data
 
+
+library(scatterD3)
+
+?scatterD3
+
+pca_data$PC1[pca_data$PC1 > 5]
+
+scatterD3(x = pca_data[,"PC1"], y = pca_data[,"PC2"], col_var = pca_data[,"group"], ellipses=T)
 
 
 sub(pattern="_nhood_5",replacement="", x=nhood5[,1][1])
